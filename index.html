@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作業員宿舎管理システム</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#f0f4f8;--bg2:#fff;--bg3:#e8f0fb;--border:#c5d5ea;--border2:#dbe8f7;--accent:#1d56c7;--accent2:#0ea5e9;--al:#dbeafe;--warn:#d97706;--danger:#dc2626;--success:#059669;--text:#1e2a3a;--text2:#4a6080;--text3:#8ba3bf;--hbg:#1d3a7a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+header{background:var(--hbg);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(29,58,122,.2);}
+.logo{font-size:17px;font-weight:700;color:#fff;letter-spacing:.04em;}.logo span{color:#93c5fd;}
+.header-actions{display:flex;gap:8px;}
+.tabs{display:flex;background:var(--bg2);border-bottom:2px solid var(--border);padding:0 16px;gap:0;overflow-x:auto;}
+.tab-btn{padding:12px 18px;background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--text2);cursor:pointer;font-size:13px;font-family:inherit;font-weight:500;transition:all .18s;white-space:nowrap;}
+.tab-btn:hover{color:var(--accent);background:var(--al);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--al);}
+.main{padding:24px;max-width:1700px;margin:0 auto;}
+.section{display:none;}.section.active{display:block;}
+.alert-bar{background:linear-gradient(135deg,#fef3c7,#fee2e2);border:1px solid #fbbf24;border-radius:8px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.alert-bar .alert-count{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--warn);}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.stat-val{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent);line-height:1;margin-bottom:4px;}
+.stat-label{font-size:11px;color:var(--text2);}
+.toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.search-input{flex:1;min-width:180px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:inherit;outline:none;}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,86,199,.1);}
+.search-input::placeholder{color:var(--text3);}
+select.filter-sel{padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;outline:none;}
+.btn{padding:8px 16px;border:none;border-radius:6px;font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 1px 4px rgba(29,86,199,.3);}
+.btn-primary:hover{background:#1a4bae;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{background:#b91c1c;}
+.btn-ghost{background:var(--bg2);border:1px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{color:var(--accent);border-color:var(--accent);background:var(--al);}
+.btn-print{background:#1d3a7a;color:#fff;}
+.btn-print:hover{background:#162d60;}
+.btn-success{background:var(--success);color:#fff;}
+.btn-success:hover{background:#047857;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:auto;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:#e8f0fb;padding:9px 11px;text-align:left;color:var(--accent);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:2;}
+td{padding:8px 11px;border-bottom:1px solid var(--border2);color:var(--text);vertical-align:middle;}
+td.wrap{white-space:normal;min-width:120px;max-width:200px;font-size:12px;line-height:1.4;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f0f6ff;}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
+.badge-ok{background:#d1fae5;color:#065f46;}
+.badge-warn{background:#fef3c7;color:#92400e;}
+.badge-danger{background:#fee2e2;color:#991b1b;}
+.badge-empty{background:#f1f5f9;color:var(--text3);}
+.badge-blue{background:var(--al);color:var(--accent);}
+.badge-purple{background:#ede9fe;color:#5b21b6;}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,30,60,.5);z-index:200;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:100%;max-width:900px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-header{padding:16px 24px 12px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:linear-gradient(to right,#e8f0fb,#fff);z-index:1;}
+.modal-title{font-size:16px;font-weight:700;color:var(--accent);}
+.modal-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px;line-height:1;}
+.modal-close:hover{color:var(--danger);}
+.modal-body{padding:18px 24px;}
+.modal-footer{padding:12px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--bg2);}
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid.col3{grid-template-columns:1fr 1fr 1fr;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group.span2{grid-column:span 2;}
+.form-group.span3{grid-column:span 3;}
+label{font-size:11px;color:var(--text2);font-weight:600;letter-spacing:.04em;}
+input[type="text"],input[type="date"],input[type="number"],textarea,select.form-sel{padding:7px 9px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;}
+input:focus,textarea:focus,select.form-sel:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(29,86,199,.1);}
+textarea{resize:vertical;min-height:64px;}
+.section-divider{grid-column:1/-1;border-top:1px solid var(--border);padding-top:10px;margin-top:4px;font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+/* residents table in form */
+.residents-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;}
+.residents-table th{background:#e8f0fb;color:var(--accent);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+.residents-table td{border:1px solid var(--border);padding:3px 4px;}
+.residents-table input{padding:4px 6px;font-size:12px;border:none;background:transparent;outline:none;width:100%;color:var(--text);}
+.residents-table input:focus{background:#f0f6ff;}
+.eq-row-remove{background:none;border:none;color:var(--danger);cursor:pointer;font-size:15px;padding:2px 4px;line-height:1;}
+.eq-row-remove:hover{background:#fee2e2;border-radius:3px;}
+/* FILE UPLOAD */
+.file-upload-area{grid-column:1/-1;border:2px dashed var(--border);border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);}
+.file-upload-area:hover,.file-upload-area.dragover{border-color:var(--accent);background:#eef4ff;}
+.file-upload-area input[type=file]{display:none;}
+.file-upload-label{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;}
+.file-upload-icon{font-size:28px;opacity:.6;}
+.file-upload-text{font-size:12px;color:var(--text2);}
+.file-upload-text span{color:var(--accent);font-weight:700;}
+.file-thumb-grid{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:4px;}
+.file-thumb{position:relative;border-radius:8px;overflow:hidden;border:1.5px solid var(--border);background:#f0f4fa;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:box-shadow .15s;}
+.file-thumb:hover{box-shadow:0 4px 16px rgba(29,86,199,.18);}
+.file-thumb img{width:100%;height:100%;object-fit:cover;}
+.file-thumb-icon{font-size:36px;text-align:center;}
+.file-thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:9px;padding:3px 4px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+.file-thumb-del{position:absolute;top:3px;right:3px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.file-thumb:hover .file-thumb-del{opacity:1;}
+.file-upload-count{font-size:11px;color:var(--text2);grid-column:1/-1;text-align:right;}
+/* FILE VIEWER OVERLAY */
+.fv-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;flex-direction:column;}
+.fv-overlay.open{display:flex;}
+.fv-toolbar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(0,0,0,.5);}
+.fv-title{flex:1;color:#fff;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fv-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;transition:background .15s;}
+.fv-btn:hover{background:rgba(255,255,255,.28);}
+.fv-content{display:flex;align-items:center;justify-content:center;width:100%;height:100%;overflow:hidden;padding-top:50px;padding-bottom:60px;}
+.fv-img-wrap{overflow:auto;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;}
+.fv-img-wrap img{transform-origin:center;transition:transform .2s;}
+.fv-pdf-wrap{width:90vw;height:calc(100vh - 120px);}
+.fv-pdf-wrap iframe{width:100%;height:100%;border:none;border-radius:8px;}
+.fv-file-icon{font-size:80px;text-align:center;color:#fff;}
+.fv-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;background:rgba(0,0,0,.5);}
+.fv-thumb-strip{display:flex;gap:8px;overflow-x:auto;max-width:80vw;}
+.fv-strip-thumb{width:44px;height:44px;border-radius:5px;border:2px solid transparent;cursor:pointer;object-fit:cover;flex-shrink:0;}
+.fv-strip-thumb.active{border-color:#fff;}
+.fv-strip-icon{width:44px;height:44px;border-radius:5px;border:2px solid transparent;cursor:pointer;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.fv-strip-icon.active{border-color:#fff;}
+/* ALERT LIST */
+.alert-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.alert-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--warn);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.alert-item.critical{border-left-color:var(--danger);background:#fff5f5;}
+.alert-item-content{flex:1;}
+.alert-item-title{font-weight:600;margin-bottom:2px;}
+.alert-item-sub{font-size:12px;color:var(--text2);}
+.alert-days{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
+/* EQUIPMENT */
+.eq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:16px;}
+.eq-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:18px;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;flex-direction:column;}
+.eq-card:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(29,86,199,.13);transform:translateY(-2px);}
+.eq-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.eq-card-name{font-weight:700;font-size:16px;color:var(--text);}
+.eq-card-meta{font-size:11px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.eq-stock-area{display:flex;align-items:flex-end;gap:8px;margin-bottom:16px;}
+.eq-stock{font-family:'JetBrains Mono',monospace;font-size:44px;font-weight:700;line-height:1;transition:color .3s;}
+.eq-stock.ok{color:var(--accent);}
+.eq-stock.warn{color:var(--warn);}
+.eq-stock.danger{color:var(--danger);}
+.eq-stock-unit{font-size:12px;color:var(--text2);margin-bottom:7px;}
+.eq-notes-inline{font-size:12px;color:var(--text2);flex:1;align-self:center;}
+.eq-card-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;}
+.btn-eq-qty{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 8px;font-size:12px;font-family:inherit;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;box-shadow:0 2px 6px rgba(29,86,199,.25);}
+.btn-eq-qty:hover{background:#2451c7;transform:translateY(-1px);}
+.btn-eq-rec{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 8px;font-size:12px;font-family:inherit;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;box-shadow:0 2px 6px rgba(124,58,237,.25);}
+.btn-eq-rec:hover{background:#6d28d9;transform:translateY(-1px);}
+.eq-card-sub{display:flex;gap:6px;justify-content:flex-end;margin-top:8px;}
+.cat-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.cat-badge.orange{background:#fff3e0;color:#e65100;}
+.cat-badge.blue{background:#e8edff;color:var(--accent);}
+.cat-badge.purple{background:#ede9fe;color:#7c3aed;}
+.cat-badge.green{background:var(--success-bg, #d1fae5);color:var(--success);}
+.cat-badge.gray{background:var(--bg3,#f1f5f9);color:var(--text2);}
+.cat-badge.red{background:#fee2e2;color:var(--danger);}
+/* qty modal type selector */
+.eq-type-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.eq-type-opt{border:2px solid var(--border);border-radius:8px;padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;background:var(--bg);user-select:none;}
+.eq-type-opt.use.sel{border-color:var(--danger);background:#fff5f5;color:var(--danger);}
+.eq-type-opt.add.sel{border-color:var(--accent);background:#e8edff;color:var(--accent);}
+.eq-type-dot{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.eq-type-dot.filled::after{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;display:block;}
+/* hist cards */
+.hist-card{border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1.5px solid transparent;}
+.hist-card:last-child{margin-bottom:0;}
+.hist-card.use{background:#fff5f5;border-color:#fecaca;}
+.hist-card.add{background:#f0fdf4;border-color:#bbf7d0;}
+.hist-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.hist-type-label{font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px;}
+.hist-type-label.use{color:var(--danger);}
+.hist-type-label.add{color:var(--success);}
+.hist-date-txt{font-size:11px;color:var(--text3);text-align:right;line-height:1.4;}
+.hist-person-row{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px;margin-bottom:2px;}
+.hist-remain-txt{font-size:11px;color:var(--text3);}
+.hist-notes-box{font-size:11px;color:var(--text2);background:rgba(0,0,0,.04);border-radius:4px;padding:3px 8px;margin-top:5px;}
+/* eq qty modal info banner */
+.eq-info-banner{background:#e8edff;border:1px solid #c7d3fb;border-radius:8px;padding:9px 13px;font-size:12px;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:6px;}
+/* stock badge in card */
+.eq-stock-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;}
+.eq-stock-badge.low{background:#fef3c7;color:#d97706;}
+.eq-stock-badge.zero{background:#fee2e2;color:var(--danger);}
+.eq-actions{margin-top:12px;display:flex;gap:6px;}
+/* SITE TAB */
+.site-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px;}
+.site-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:all .15s;}
+.site-card:hover{box-shadow:0 4px 16px rgba(29,86,199,.12);border-color:var(--accent);}
+.site-card-header{background:linear-gradient(135deg,#1d3a7a,#1d56c7);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
+.site-card-name{font-weight:700;font-size:15px;}
+.site-card-count{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#93c5fd;}
+.site-card-body{padding:14px 16px;}
+.site-room-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.site-room-item{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-radius:5px;background:var(--bg);}
+.site-room-name{font-size:12px;font-weight:600;}
+.site-room-residents{font-size:11px;color:var(--text2);}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:12px;}
+.page-info{font-size:12px;color:var(--text2);margin-right:8px;}
+.page-btn{width:30px;height:30px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:4px;cursor:pointer;font-size:12px;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.page-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--al);}
+.page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.empty-state{text-align:center;padding:48px;color:var(--text3);}
+.empty-state .icon{font-size:48px;margin-bottom:12px;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ======== PRINT MODAL ======== */
+.print-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+.print-modal-overlay.open{display:flex;}
+.print-modal-inner{background:#e8edf3;border-radius:12px;width:100%;max-width:840px;padding-bottom:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);}
+.print-modal-toolbar{background:#1d3a7a;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:12px 12px 0 0;position:sticky;top:0;z-index:1;}
+.print-modal-toolbar-title{font-weight:700;font-size:15px;letter-spacing:.04em;}
+.print-modal-body{padding:20px;}
+
+/* ======== A4 SHEET ======== */
+.print-sheet{background:#fff;border-radius:2px;padding:26px 30px;font-size:11px;color:#1e2a3a;line-height:1.5;box-shadow:0 6px 24px rgba(0,0,0,.15);font-family:'Noto Sans JP',sans-serif;}
+.sheet-head{display:flex;align-items:stretch;margin-bottom:14px;border:2px solid #1d3a7a;border-radius:3px;overflow:hidden;}
+.sheet-head-label{background:#1d3a7a;color:#fff;writing-mode:vertical-rl;text-orientation:mixed;padding:10px 8px;font-weight:700;font-size:13px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center;min-width:32px;}
+.sheet-head-main{flex:1;padding:10px 14px;}
+.sheet-room-name{font-size:20px;font-weight:700;color:#1d3a7a;border-bottom:1px solid #c5d5ea;padding-bottom:5px;margin-bottom:6px;}
+.sheet-meta-row{display:flex;gap:18px;font-size:10.5px;color:#4a6080;flex-wrap:wrap;}
+.sheet-meta-row span{display:inline-flex;gap:4px;align-items:center;}
+.sheet-meta-row strong{color:#1e2a3a;}
+.sheet-section{margin-bottom:11px;}
+.sheet-section-title{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1d56c7;border-bottom:1.5px solid #c5d5ea;padding-bottom:3px;margin-bottom:6px;}
+.sheet-info-grid{display:grid;border:1px solid #c5d5ea;border-radius:2px;overflow:hidden;}
+.sheet-info-grid.col2{grid-template-columns:1fr 1fr;}
+.sheet-info-grid.col3{grid-template-columns:1fr 1fr 1fr;}
+.sheet-info-grid.col4{grid-template-columns:repeat(4,1fr);}
+.info-cell{padding:5px 9px;border-right:1px solid #c5d5ea;border-bottom:1px solid #c5d5ea;}
+.info-cell:last-child{border-right:none;}
+.info-cell .ic-label{font-size:8.5px;color:#4a6080;font-weight:700;letter-spacing:.06em;margin-bottom:1px;}
+.info-cell .ic-value{font-size:11px;font-weight:500;min-height:14px;}
+/* residents in sheet */
+.sheet-res-table{width:100%;border-collapse:collapse;font-size:10.5px;}
+.sheet-res-table th{background:#dbeafe;color:#1d3a7a;font-weight:700;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border:1px solid #c5d5ea;text-align:center;}
+.sheet-res-table td{border:1px solid #c5d5ea;padding:4px 7px;}
+/* checklist */
+.sheet-checklist{width:100%;border-collapse:collapse;font-size:10.5px;}
+.sheet-checklist th{background:#dbeafe;color:#1d3a7a;font-weight:700;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 7px;border:1px solid #c5d5ea;text-align:center;}
+.sheet-checklist td{border:1px solid #c5d5ea;padding:4px 7px;vertical-align:top;}
+.sheet-checklist .td-label{font-weight:700;font-size:10.5px;background:#f0f6ff;white-space:nowrap;}
+.sheet-checklist .td-company{font-size:10px;color:#1e2a3a;vertical-align:middle;}
+.sheet-checklist .td-write{background:#fffdf5;}
+.sheet-checklist .td-check{text-align:center;vertical-align:middle;}
+.write-line{border-bottom:1px solid #b0c4de;margin:3px 0;height:14px;}
+.checkbox-sq{width:13px;height:13px;border:1.5px solid #7a9abf;border-radius:2px;margin:0 auto;}
+.sheet-notes-box{border:1px solid #c5d5ea;border-radius:2px;padding:6px 9px;background:#fafbff;}
+.notes-line{border-bottom:1px dashed #c5d5ea;height:19px;}
+.sheet-furniture-box{border:1px solid #c5d5ea;border-radius:2px;padding:5px 9px;font-size:11px;background:#fafbff;min-height:24px;}
+.sheet-stamp-row{display:flex;gap:8px;margin-top:10px;}
+.sheet-stamp{flex:1;border:1px solid #c5d5ea;border-radius:2px;padding:6px 9px;}
+.sheet-stamp .stamp-label{font-size:9px;color:#4a6080;margin-bottom:2px;font-weight:700;letter-spacing:.06em;}
+.sheet-stamp .stamp-line{border-bottom:1px solid #94a3b8;height:17px;margin:3px 6px;}
+
+/* ======== PRINT MEDIA ======== */
+@media print{
+  body>*:not(.print-modal-overlay){display:none!important;}
+  .print-modal-overlay{display:block!important;position:static;background:none;padding:0;overflow:visible;}
+  .print-modal-inner{background:none;border-radius:0;box-shadow:none;padding:0;}
+  .print-modal-toolbar{display:none!important;}
+  .print-modal-body{padding:0;}
+  .print-sheet{box-shadow:none;border-radius:0;padding:10mm 12mm;font-size:10pt;}
+  @page{size:A4 portrait;margin:0;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏠 <span>作業員</span>宿舎管理システム</div>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📥 CSV</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('dashboard',this)">📊 ダッシュボード</button>
+  <button class="tab-btn" onclick="showTab('rooms',this)">🏠 宿舎一覧</button>
+  <button class="tab-btn" onclick="showTab('sites',this)">🏗️ 現場別</button>
+  <button class="tab-btn" onclick="showTab('alerts',this)">⚠️ 更新アラート <span id="alert-badge"></span></button>
+  <button class="tab-btn" onclick="showTab('parking',this)">🚗 宿舎外駐車場</button>
+  <button class="tab-btn" onclick="showTab('aircon',this)">❄️ 自社備品エアコン</button>
+  <button class="tab-btn" onclick="showTab('equipment',this)">📦 備品管理</button>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="section active">
+  <div id="alert-bar-container"></div>
+  <div class="stats-row" id="stats-row"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div>
+      <h3 style="font-size:12px;color:var(--text2);margin-bottom:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;">⚠️ 近日中の更新（60日以内）</h3>
+      <div id="dash-alerts" class="alert-list"></div>
+    </div>
+    <div>
+      <h3 style="font-size:12px;color:var(--text2);margin-bottom:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;">🏠 最近追加された宿舎</h3>
+      <div id="dash-recent" class="table-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROOMS -->
+<div id="tab-rooms" class="section">
+  <div class="toolbar">
+    <input class="search-input" type="text" id="room-search" placeholder="部屋名・入居者・住所・現場名で検索..." oninput="renderRooms()">
+    <select class="filter-sel" id="room-site-filter" onchange="renderRooms()"><option value="">全現場</option></select>
+    <select class="filter-sel" id="room-status-filter" onchange="renderRooms()">
+      <option value="">全ステータス</option>
+      <option value="入居中">入居中</option>
+      <option value="空室">空室</option>
+      <option value="解約済">解約済</option>
+    </select>
+    <button class="btn btn-primary" onclick="openRoomModal()">＋ 宿舎を追加</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>現場名</th><th>部屋名</th><th>郵便番号</th><th>住所</th><th>入居者</th>
+          <th>不動産屋</th><th>管理会社</th><th>電気</th><th>水道</th>
+          <th>リース更新</th><th>保険更新</th><th>駐車場</th><th>追加駐車場</th>
+          <th>入居日</th><th>解約日</th><th>状態</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="room-tbody"></tbody>
+    </table>
+  </div>
+  <div class="pagination" id="room-pagination"></div>
+</div>
+
+<!-- SITES -->
+<div id="tab-sites" class="section">
+  <div class="toolbar">
+    <input class="search-input" type="text" id="site-search" placeholder="現場名で検索..." oninput="renderSites()">
+  </div>
+  <div id="site-summary" style="margin-bottom:16px;"></div>
+  <div class="site-grid" id="site-grid"></div>
+</div>
+
+<!-- ALERTS -->
+<div id="tab-alerts" class="section">
+  <div class="toolbar">
+    <select class="filter-sel" id="alert-type-filter" onchange="renderAlerts()">
+      <option value="">全種別</option><option value="lease">家具リース</option><option value="insurance">火災保険</option>
+    </select>
+    <select class="filter-sel" id="alert-days-filter" onchange="renderAlerts()">
+      <option value="30">30日以内</option><option value="60" selected>60日以内</option>
+      <option value="90">90日以内</option><option value="180">180日以内</option>
+    </select>
+  </div>
+  <div id="alert-list-container" class="alert-list"></div>
+</div>
+
+<!-- PARKING -->
+<div id="tab-parking" class="section">
+  <div class="toolbar">
+    <input class="search-input" type="text" id="pk-search" placeholder="現場名・物件名・駐車場名・氏名・ナンバーで検索..." oninput="renderParking()">
+    <select class="filter-sel" id="pk-site-filter" onchange="renderParking()"><option value="">全現場</option></select>
+    <button class="btn btn-primary" onclick="openPkModal()">＋ 駐車場を追加</button>
+  </div>
+  <div id="pk-stats" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>現場名</th><th>対象物件</th><th>駐車場名</th><th>駐車者</th><th>車両番号</th>
+          <th>管理会社</th><th>初期費用</th><th>月額賃料</th><th>違約金発生時期</th><th>退去時注意事項</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="pk-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- AIRCON -->
+<div id="tab-aircon" class="section">
+  <div class="toolbar">
+    <input class="search-input" type="text" id="ac-search" placeholder="型番・使用宿舎・業者名で検索..." oninput="renderAircon()">
+    <select class="filter-sel" id="ac-site-filter" onchange="renderAircon()"><option value="">全現場</option></select>
+    <select class="filter-sel" id="ac-status-filter" onchange="renderAircon()">
+      <option value="">全ステータス</option>
+      <option value="使用中">使用中</option>
+      <option value="未使用">未使用</option>
+      <option value="取り外し済">取り外し済</option>
+    </select>
+    <button class="btn btn-primary" onclick="openAcModal()">＋ エアコンを追加</button>
+  </div>
+  <div id="ac-stats" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>型番</th><th>状態</th><th>使用宿舎</th><th>購入日</th><th>購入金額</th>
+          <th>使用開始日</th><th>取り付け業者</th><th>使用終了日</th><th>取り外し業者</th><th>メモ</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="ac-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- EQUIPMENT -->
+<div id="tab-equipment" class="section">
+  <!-- Sub tabs -->
+  <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--border);">
+    <button class="eq-sub-btn active" id="eq-sub-warehouse" onclick="showEqSub('warehouse',this)" style="padding:9px 20px;border:none;background:none;border-bottom:3px solid var(--accent);margin-bottom:-2px;color:var(--accent);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;">🏪 倉庫在庫</button>
+    <button class="eq-sub-btn" id="eq-sub-lending" onclick="showEqSub('lending',this)" style="padding:9px 20px;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--text2);font-weight:500;font-size:13px;font-family:inherit;cursor:pointer;">📤 貸出中</button>
+  </div>
+
+  <!-- WAREHOUSE sub -->
+  <div id="eq-pane-warehouse">
+    <div class="toolbar">
+      <input class="search-input" type="text" id="eq-search" placeholder="備品名・場所・カテゴリで検索..." oninput="renderEquipment()">
+      <select class="filter-sel" id="eq-location-filter" onchange="renderEquipment()"><option value="">全倉庫</option></select>
+      <button class="btn btn-primary" onclick="openEqModal()">＋ 備品を追加</button>
+      <button class="btn btn-ghost" onclick="openLendHistoryModal(null)" style="border-color:var(--accent);color:var(--accent)">📋 貸出履歴</button>
+    </div>
+    <!-- stats row -->
+    <div id="eq-stats" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;"></div>
+    <div class="eq-grid" id="eq-grid"></div>
+  </div>
+
+  <!-- LENDING sub -->
+  <div id="eq-pane-lending" style="display:none;">
+    <div class="toolbar">
+      <input class="search-input" type="text" id="lend-search" placeholder="備品名・宿舎名・入居者で検索..." oninput="renderLending()">
+      <button class="btn btn-primary" onclick="openLendModal()">＋ 貸出を記録</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>備品名</th><th>カテゴリ</th><th>貸出先（宿舎・住所）</th><th>数量</th><th>貸出日</th><th>返却予定日</th><th>状態</th><th>メモ</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="lend-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ======== ROOM MODAL ======== -->
+<div class="modal-overlay" id="room-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="room-modal-title">宿舎を追加</div>
+      <button class="modal-close" onclick="closeRoomModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="section-divider">基本情報</div>
+        <div class="form-group"><label>現場名</label><input type="text" id="f-site" placeholder="例：○○工事現場" list="site-datalist"><datalist id="site-datalist"></datalist></div>
+        <div class="form-group"><label>部屋名 *</label><input type="text" id="f-name" placeholder="例：第1宿舎A棟101"></div>
+        <div class="form-group"><label>郵便番号</label><input type="text" id="f-zip" placeholder="000-0000"></div>
+        <div class="form-group"><label>ステータス</label><select class="form-sel" id="f-status"><option value="入居中">入居中</option><option value="空室">空室</option><option value="解約済">解約済</option></select></div>
+        <div class="form-group span2"><label>住所</label><input type="text" id="f-address" placeholder="住所"></div>
+        <div class="form-group"><label>入居日</label><input type="date" id="f-move-in"></div>
+        <div class="form-group"><label>解約日</label><input type="date" id="f-move-out"></div>
+
+        <div class="section-divider">入居者（最大5名）</div>
+        <div class="form-group span2">
+          <table class="residents-table">
+            <thead><tr><th>#</th><th>氏名</th><th>備考（所属・職種など）</th></tr></thead>
+            <tbody id="residents-tbody">
+              <tr><td style="padding:4px 6px;color:var(--text2);font-size:11px;text-align:center;">1</td><td><input type="text" class="res-name" placeholder="氏名"></td><td><input type="text" class="res-note" placeholder="備考"></td></tr>
+              <tr><td style="padding:4px 6px;color:var(--text2);font-size:11px;text-align:center;">2</td><td><input type="text" class="res-name" placeholder="氏名"></td><td><input type="text" class="res-note" placeholder="備考"></td></tr>
+              <tr><td style="padding:4px 6px;color:var(--text2);font-size:11px;text-align:center;">3</td><td><input type="text" class="res-name" placeholder="氏名"></td><td><input type="text" class="res-note" placeholder="備考"></td></tr>
+              <tr><td style="padding:4px 6px;color:var(--text2);font-size:11px;text-align:center;">4</td><td><input type="text" class="res-name" placeholder="氏名"></td><td><input type="text" class="res-note" placeholder="備考"></td></tr>
+              <tr><td style="padding:4px 6px;color:var(--text2);font-size:11px;text-align:center;">5</td><td><input type="text" class="res-name" placeholder="氏名"></td><td><input type="text" class="res-note" placeholder="備考"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section-divider">契約先</div>
+        <div class="form-group"><label>不動産屋</label><input type="text" id="f-realestate" placeholder="会社名"></div>
+        <div class="form-group"><label>不動産屋 電話番号</label><input type="text" id="f-realestate-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>管理会社</label><input type="text" id="f-management" placeholder="会社名"></div>
+        <div class="form-group"><label>管理会社 電話番号</label><input type="text" id="f-management-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>電気会社</label><input type="text" id="f-electric" placeholder="会社名"></div>
+        <div class="form-group"><label>電気会社 電話番号</label><input type="text" id="f-electric-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>水道会社</label><input type="text" id="f-water" placeholder="会社名"></div>
+        <div class="form-group"><label>水道会社 電話番号</label><input type="text" id="f-water-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>ガス会社</label><input type="text" id="f-gas" placeholder="会社名"></div>
+        <div class="form-group"><label>ガス会社 電話番号</label><input type="text" id="f-gas-tel" placeholder="000-0000-0000"></div>
+
+        <div class="section-divider">家具リース</div>
+        <div class="form-group"><label>リース会社</label><input type="text" id="f-lease-co" placeholder="会社名"></div>
+        <div class="form-group"><label>リース会社 電話番号</label><input type="text" id="f-lease-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>次回更新日</label><input type="date" id="f-lease-date"></div>
+        <div class="form-group span2"><label>リース品目（品名・数量など）</label><textarea id="f-lease-items" placeholder="例：ベッド×2・テレビ・冷蔵庫・洗濯機" style="min-height:54px;"></textarea></div>
+        <div class="form-group span2" style="display:none"><label>（旧）弊社管理家具メモ</label><input type="text" id="f-owned-furniture"></div>
+
+        <div class="section-divider">弊社管理備品（備品管理と連動）</div>
+        <div class="form-group span2">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <label style="margin:0">備品を追加</label>
+            <select id="f-eq-add-select" class="form-sel" style="flex:1">
+              <option value="">── 備品を選択 ──</option>
+            </select>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addRoomEquipmentRow()">追加</button>
+          </div>
+          <table class="residents-table" id="f-eq-table">
+            <thead>
+              <tr>
+                <th>備品名</th>
+                <th style="width:70px">数量</th>
+                <th style="width:90px">貸出日</th>
+                <th style="width:100px">返却予定日</th>
+                <th>メモ</th>
+                <th style="width:36px"></th>
+              </tr>
+            </thead>
+            <tbody id="f-eq-tbody">
+              <tr id="f-eq-empty-row"><td colspan="6" style="text-align:center;color:var(--text3);font-size:12px;padding:10px">備品が追加されていません</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px;color:var(--text2);margin-top:6px">※ 保存すると備品の在庫数が自動で更新されます。変更前の貸出は返却処理されます。</div>
+        </div>
+
+        <div class="section-divider">自社備品エアコン ❄️</div>
+        <div class="form-group span2">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <label style="margin:0">エアコンを追加</label>
+            <select id="f-ac-add-select" class="form-sel" style="flex:1">
+              <option value="">── 型番を選択（エアコンタブで先に登録）──</option>
+            </select>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addRoomAcRow()">追加</button>
+          </div>
+          <table class="residents-table" id="f-ac-table">
+            <thead>
+              <tr>
+                <th>型番</th>
+                <th style="width:90px">使用開始日</th>
+                <th style="width:90px">使用終了日</th>
+                <th style="width:110px">取り外し業者</th>
+                <th style="width:110px">取り外し業者TEL</th>
+                <th>取り外し業者メモ</th>
+                <th style="width:36px"></th>
+              </tr>
+            </thead>
+            <tbody id="f-ac-tbody">
+              <tr id="f-ac-empty-row"><td colspan="7" style="text-align:center;color:var(--text3);font-size:12px;padding:10px">エアコンが追加されていません</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">※ 追加の場合は型番を必ず入力してください（例：エアコン 型番）。保存するとエアコンタブにも反映されます。</div>
+        </div>
+
+        <div class="section-divider">火災保険</div>
+        <div class="form-group"><label>保険会社</label><input type="text" id="f-ins-co" placeholder="会社名"></div>
+        <div class="form-group"><label>保険会社 電話番号</label><input type="text" id="f-ins-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>次回更新日</label><input type="date" id="f-ins-date"></div>
+        <div class="form-group"><label>証券番号</label><input type="text" id="f-ins-number" placeholder="証券番号"></div>
+
+        <div class="section-divider">駐車場</div>
+        <div class="form-group"><label>駐車場（物件内）</label><input type="text" id="f-parking" placeholder="例：敷地内1台"></div>
+        <div class="form-group"><label>追加駐車場（外部）名称</label><input type="text" id="f-extra-parking" placeholder="例：○○パーキング"></div>
+        <div class="form-group"><label>駐車者氏名</label><input type="text" id="f-pk-person" placeholder="例：山田 太郎"></div>
+        <div class="form-group"><label>車両番号</label><input type="text" id="f-pk-number" placeholder="例：横浜 500 あ 1234"></div>
+        <div class="form-group"><label>管理会社</label><input type="text" id="f-pk-mgmt" placeholder="管理会社名"></div>
+        <div class="form-group"><label>管理会社 電話番号</label><input type="text" id="f-pk-mgmt-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>初期費用（円）</label><input type="number" id="f-pk-init" placeholder="0" min="0"></div>
+        <div class="form-group"><label>月額賃料（円）</label><input type="number" id="f-pk-monthly" placeholder="0" min="0"></div>
+        <div class="form-group"><label>違約金の発生時期</label><input type="text" id="f-pk-penalty" placeholder="例：契約開始から6ヶ月以内の解約"></div>
+        <div class="form-group span2"><label>退去時注意事項</label><textarea id="f-pk-caution" placeholder="例：1ヶ月前に書面で解約通知が必要" style="min-height:56px;"></textarea></div>
+
+        <div class="section-divider">備考</div>
+        <div class="form-group span2"><label>備考</label><textarea id="f-notes" placeholder="自由記入"></textarea></div>
+
+        <div class="section-divider">添付ファイル（最大20枚）</div>
+        <div class="file-upload-count" id="f-file-count">0 / 20 ファイル</div>
+        <div class="file-thumb-grid" id="f-thumb-grid"></div>
+        <div class="file-upload-area" id="f-upload-area" ondragover="fileDragOver(event)" ondragleave="fileDragLeave(event)" ondrop="fileDrop(event)">
+          <label class="file-upload-label" for="f-file-input">
+            <span class="file-upload-icon">📎</span>
+            <span class="file-upload-text">クリックまたはドラッグ＆ドロップで追加<br><span>PDF・JPEG・PNG・その他</span>（1ファイル20MBまで）</span>
+          </label>
+          <input type="file" id="f-file-input" multiple accept="*/*" onchange="fileInputChange(event)">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeRoomModal()">キャンセル</button>
+      <button class="btn btn-print" id="modal-print-btn" style="display:none" onclick="printCurrentRoom()">🖨️ 退去チェックシート</button>
+      <button class="btn btn-primary" onclick="saveRoom()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FILE VIEWER OVERLAY ======== -->
+<div class="fv-overlay" id="fv-overlay">
+  <div class="fv-toolbar">
+    <span class="fv-title" id="fv-title"></span>
+    <button class="fv-btn" onclick="fvZoom(-0.25)">🔍−</button>
+    <button class="fv-btn" onclick="fvZoom(0.25)">🔍＋</button>
+    <button class="fv-btn" onclick="fvZoomReset()">100%</button>
+    <button class="fv-btn" onclick="fvFit()">全体</button>
+    <button class="fv-btn" onclick="fvDownload()">⬇️ DL</button>
+    <button class="fv-btn" onclick="closeFv()">✕ 閉じる</button>
+  </div>
+  <div class="fv-content" id="fv-content"></div>
+  <div class="fv-bottom">
+    <button class="fv-btn" onclick="fvPrev()">◀</button>
+    <div class="fv-thumb-strip" id="fv-strip"></div>
+    <button class="fv-btn" onclick="fvNext()">▶</button>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="eq-modal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <div class="modal-title" id="eq-modal-title">備品を追加</div>
+      <button class="modal-close" onclick="closeEqModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>備品名 *</label><input type="text" id="e-name" placeholder="例：折りたたみベッド"></div>
+        <div class="form-group"><label>カテゴリ</label><input type="text" id="e-category" placeholder="例：寝具・家電・家具"></div>
+        <div class="form-group"><label>保管倉庫・場所</label><input type="text" id="e-location" placeholder="例：第1倉庫"></div>
+        <div class="form-group"><label>在庫数</label><input type="number" id="e-stock" value="1" min="0"></div>
+        <div class="form-group span2"><label>備考</label><textarea id="e-notes" placeholder="状態・メモなど" style="min-height:56px;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEqModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveEquipment()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== LENDING MODAL ======== -->
+<div class="modal-overlay" id="lend-modal">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header">
+      <div class="modal-title" id="lend-modal-title">貸出を記録</div>
+      <button class="modal-close" onclick="closeLendModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>備品 *</label>
+          <select class="form-sel" id="l-item">
+            <option value="">選択してください</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>数量 *</label>
+          <input type="number" id="l-qty" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label>貸出先（宿舎）</label>
+          <select class="form-sel" id="l-room">
+            <option value="">選択してください</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>入居者名（任意）</label>
+          <input type="text" id="l-person" placeholder="氏名">
+        </div>
+        <div class="form-group">
+          <label>貸出日</label>
+          <input type="date" id="l-out-date">
+        </div>
+        <div class="form-group">
+          <label>返却予定日</label>
+          <input type="date" id="l-return-date">
+        </div>
+        <div class="form-group span2">
+          <label>メモ</label>
+          <input type="text" id="l-notes" placeholder="備考など">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeLendModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveLending()">貸出を登録</button>
+    </div>
+  </div>
+</div>
+<!-- ======== AIRCON MODAL ======== -->
+<div class="modal-overlay" id="ac-modal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-header">
+      <div class="modal-title" id="ac-modal-title">❄️ エアコンを追加</div>
+      <button class="modal-close" onclick="closeAcModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="section-divider">基本情報</div>
+        <div class="form-group span2"><label>型番 * <span style="color:var(--danger);font-size:10px">（必須：例「ダイキンエアコン S28YTES」）</span></label><input type="text" id="ac-model" placeholder="例：ダイキン S28YTES"></div>
+        <div class="form-group"><label>購入日</label><input type="date" id="ac-buy-date"></div>
+        <div class="form-group"><label>購入金額（円）</label><input type="number" id="ac-buy-cost" placeholder="0" min="0"></div>
+        <div class="form-group"><label>ステータス</label>
+          <select class="form-sel" id="ac-status">
+            <option value="使用中">使用中</option>
+            <option value="未使用">未使用</option>
+            <option value="取り外し済">取り外し済</option>
+          </select>
+        </div>
+        <div class="form-group"><label>現場名</label><input type="text" id="ac-site" list="ac-site-datalist"><datalist id="ac-site-datalist"></datalist></div>
+        <div class="form-group"><label>使用宿舎</label><select class="form-sel" id="ac-room"><option value="">（宿舎を選択）</option></select></div>
+        <div class="form-group"><label>使用開始日</label><input type="date" id="ac-start-date"></div>
+        <div class="form-group"><label>使用終了日</label><input type="date" id="ac-end-date"></div>
+
+        <div class="section-divider">取り付け業者</div>
+        <div class="form-group"><label>取り付け業者名</label><input type="text" id="ac-install-co" placeholder="会社名"></div>
+        <div class="form-group"><label>取り付け業者電話番号</label><input type="text" id="ac-install-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group span2"><label>取り付け業者メモ</label><textarea id="ac-install-memo" placeholder="施工メモ・連絡事項など" style="min-height:50px;"></textarea></div>
+
+        <div class="section-divider">取り外し業者</div>
+        <div class="form-group"><label>取り外し業者名</label><input type="text" id="ac-remove-co" placeholder="会社名"></div>
+        <div class="form-group"><label>取り外し業者電話番号</label><input type="text" id="ac-remove-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group span2"><label>取り外し業者メモ</label><textarea id="ac-remove-memo" placeholder="退去時の連絡・注意事項など" style="min-height:50px;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeAcModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveAc()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== PARKING MODAL ======== -->
+<div class="modal-overlay" id="pk-modal">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <div class="modal-title" id="pk-modal-title">駐車場を追加</div>
+      <button class="modal-close" onclick="closePkModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="section-divider">基本情報</div>
+        <div class="form-group"><label>現場名</label><input type="text" id="pk-site" placeholder="例：横浜港岸壁改良工事" list="pk-site-datalist"><datalist id="pk-site-datalist"></datalist></div>
+        <div class="form-group"><label>対象物件（宿舎名）</label><select class="form-sel" id="pk-room"><option value="">選択 または 直接入力</option></select></div>
+        <div class="form-group span2"><label>駐車場名・場所</label><input type="text" id="pk-name" placeholder="例：ダイヤモンドパーキング○○"></div>
+
+        <div class="section-divider">車両・駐車者</div>
+        <div class="form-group"><label>駐車者氏名</label><input type="text" id="pk-person" placeholder="例：山田 太郎"></div>
+        <div class="form-group"><label>車両番号</label><input type="text" id="pk-number" placeholder="例：横浜 500 あ 1234"></div>
+
+        <div class="section-divider">契約情報</div>
+        <div class="form-group"><label>管理会社</label><input type="text" id="pk-mgmt" placeholder="管理会社名"></div>
+        <div class="form-group"><label>管理会社 電話番号</label><input type="text" id="pk-mgmt-tel" placeholder="000-0000-0000"></div>
+        <div class="form-group"><label>初期費用（円）</label><input type="number" id="pk-init" placeholder="0" min="0"></div>
+        <div class="form-group"><label>月額賃料（円）</label><input type="number" id="pk-monthly" placeholder="0" min="0"></div>
+        <div class="form-group span2"><label>違約金の発生時期</label><input type="text" id="pk-penalty" placeholder="例：契約開始から6ヶ月以内の解約"></div>
+        <div class="form-group span2"><label>退去時注意事項</label><textarea id="pk-caution" placeholder="例：1ヶ月前に書面で解約通知が必要" style="min-height:64px;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePkModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="savePk()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== EQ QTY CHANGE MODAL ======== -->
+<div class="modal-overlay" id="eq-qty-modal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">📝 <span id="eq-qty-modal-name">—</span> - 数量変更</div>
+      </div>
+      <button class="modal-close" onclick="closeEqQtyModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0 20px 20px;">
+      <div class="eq-info-banner">💡 在庫の増減を記録します</div>
+      <div class="form-group">
+        <label class="form-label">増減タイプ <span style="color:var(--danger)">*</span></label>
+        <div class="eq-type-selector">
+          <div class="eq-type-opt use sel" id="eq-type-use" onclick="selectEqType('use')">
+            <div class="eq-type-dot filled" id="eq-dot-use"></div>
+            <span>－ 使用（減らす）</span>
+          </div>
+          <div class="eq-type-opt add" id="eq-type-add" onclick="selectEqType('add')">
+            <div class="eq-type-dot" id="eq-dot-add"></div>
+            <span>＋ 追加（増やす）</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">使用者名 <span style="color:var(--danger)">*</span></label>
+        <input class="form-input" id="eq-qty-person" type="text" placeholder="例：田中 太郎">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group">
+          <label class="form-label">変更個数 <span style="color:var(--danger)">*</span></label>
+          <input class="form-input" id="eq-qty-amount" type="number" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">日付</label>
+          <input class="form-input" id="eq-qty-date" type="date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">時刻</label>
+        <input class="form-input" id="eq-qty-time" type="time">
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">メモ（任意）</label>
+        <textarea class="form-input" id="eq-qty-memo" placeholder="例：現場Aで使用 / 新規購入" style="min-height:64px;resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEqQtyModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveEqQtyChange()">✅ 記録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== EQ HISTORY MODAL ======== -->
+<div class="modal-overlay" id="eq-hist-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header" style="border-bottom:1px solid var(--border);padding-bottom:14px;">
+      <div>
+        <div class="modal-title">📊 <span id="eq-hist-modal-name">—</span> - 使用・追加記録</div>
+        <div id="eq-hist-summary" style="font-size:12px;color:var(--text2);margin-top:3px;"></div>
+      </div>
+      <button class="modal-close" onclick="closeEqHistModal()">✕</button>
+    </div>
+    <div id="eq-hist-body" style="padding:16px 20px;max-height:60vh;overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEqHistModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== LENDING HISTORY MODAL ======== -->
+<div class="modal-overlay" id="lend-history-modal">
+  <div class="modal" style="max-width:1000px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="lend-history-title">📋 貸出履歴</div>
+        <div id="lend-history-sub" style="font-size:12px;color:var(--text2);margin-top:2px"></div>
+      </div>
+      <button class="modal-close" onclick="closeLendHistoryModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <!-- filters -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+        <input class="search-input" type="text" id="lh-search" placeholder="借用者・宿舎名・住所で検索..." oninput="renderLendHistory()" style="flex:1;min-width:200px">
+        <select class="filter-sel" id="lh-status" onchange="renderLendHistory()">
+          <option value="">全ステータス</option>
+          <option value="貸出中">貸出中</option>
+          <option value="返却済">返却済</option>
+        </select>
+        <select class="filter-sel" id="lh-alert" onchange="renderLendHistory()">
+          <option value="">期限アラートなし</option>
+          <option value="overdue">⚠️ 返却遅延</option>
+          <option value="soon">🔔 7日以内に期限</option>
+        </select>
+        <div id="lh-counts" style="font-size:12px;color:var(--text2);white-space:nowrap"></div>
+      </div>
+      <!-- summary badges -->
+      <div id="lh-summary" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
+      <!-- table -->
+      <div class="table-wrap" style="max-height:60vh;overflow-y:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>備品名</th>
+              <th>借用者</th>
+              <th>貸出先（宿舎）</th>
+              <th style="text-align:center">数量</th>
+              <th>貸出日</th>
+              <th>返却予定日</th>
+              <th>状態</th>
+              <th>登録種別</th>
+              <th>メモ</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="lh-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:space-between;">
+      <div style="font-size:12px;color:var(--text2)">貸出中の返却は「返却」ボタン、宿舎連動の貸出は宿舎編集から管理してください</div>
+      <button class="btn btn-ghost" onclick="closeLendHistoryModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="print-modal-overlay" id="print-modal">
+  <div class="print-modal-inner">
+    <div class="print-modal-toolbar">
+      <div class="print-modal-toolbar-title">🖨️ 退去チェックシート — プレビュー</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-sm" style="background:#93c5fd;color:#1d3a7a;font-weight:700;" onclick="closePrintModal()">✕ 閉じる</button>
+        <button class="btn btn-sm" style="background:#93c5fd;color:#1d3a7a;font-weight:700;" onclick="window.print()">🖨️ 印刷する（A4）</button>
+      </div>
+    </div>
+    <div class="print-modal-body">
+      <div class="print-sheet" id="print-sheet-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======== DATA ========
+// ======== SUPABASE CONFIG ========
+const SUPABASE_URL = 'https://bmtidbkefvkhlqprihfe.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtdGlkYmtlZnZraGxxcHJpaGZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODYzMzksImV4cCI6MjA4NzE2MjMzOX0.V4bbh424bnnlaEb49YtJDIfE1fgRCx5NKslohqNFl84';
+const SB = window._sb = (() => {
+  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+  const base = SUPABASE_URL + '/rest/v1/';
+  async function get(table, params=''){
+    const r = await fetch(base+table+(params?'?'+params:''), {headers:{...headers,'Accept':'application/json'}});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function insert(table, data){
+    const r = await fetch(base+table, {method:'POST', headers, body:JSON.stringify(data)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function update(table, id, data){
+    const r = await fetch(base+table+'?id=eq.'+id, {method:'PATCH', headers, body:JSON.stringify(data)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function del(table, id){
+    const r = await fetch(base+table+'?id=eq.'+id, {method:'DELETE', headers});
+    if(!r.ok) throw new Error(await r.text());
+    return true;
+  }
+  return {get, insert, update, del};
+})();
+
+// ======== SUPABASE STORAGE ========
+const BUCKET = 'room-files';
+async function storageUpload(roomId, file){
+  // パスは英数字のみ（日本語NG）
+  const ext = (file.name.split('.').pop()||'bin').replace(/[^a-zA-Z0-9]/g,'bin');
+  const uid = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  const path = `${roomId}/${uid}.${ext}`;
+  const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'Content-Type': file.type||'application/octet-stream',
+      'x-upsert':'false',
+    },
+    body: file
+  });
+  if(!r.ok) throw new Error('Upload failed: '+(await r.text()));
+  return {path, originalName: file.name};
+}
+async function storageDelete(path){
+  try{
+    await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`,{method:'DELETE',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
+  }catch(e){ console.warn('storage delete error',e); }
+  // fileNamesマップからも除去
+  if(editRoomId){
+    const fm = {...(fileNamesMap)};
+    delete fm[path];
+    fileNamesMap = fm;
+    await saveFileNamesMap(editRoomId);
+  }
+}
+function storageUrl(path){
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+}
+async function storageListRoom(roomId){
+  // Storage list API でファイル一覧取得
+  try{
+    const r = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`,{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({prefix:`${roomId}/`, limit:100, offset:0})
+    });
+    if(!r.ok) return [];
+    const data = await r.json();
+    // fileNamesMapからファイル名を復元
+    return (data||[])
+      .filter(f=>f.name && f.name!=='.emptyFolderPlaceholder')
+      .map(f=>{
+        const path = `${roomId}/${f.name}`;
+        const displayName = fileNamesMap[path] || f.name;
+        return { path, name: displayName, url: storageUrl(path) };
+      });
+  }catch(e){
+    console.warn('storageListRoom error:', e.message);
+    return [];
+  }
+}
+
+// ======== FILE NAME MAP (roomsテーブルの file_names カラムに保存) ========
+// { "roomId/uid.ext": "元のファイル名.pdf", ... }
+let fileNamesMap = {};
+
+async function loadFileNamesMap(roomId){
+  try{
+    const rows = await SB.get('rooms','id=eq.'+roomId+'&select=file_names');
+    const val = rows[0]?.file_names;
+    fileNamesMap = (val && typeof val === 'object') ? val : {};
+  }catch(e){ fileNamesMap = {}; }
+}
+async function saveFileNamesMap(roomId){
+  try{ await SB.update('rooms', roomId, {file_names: fileNamesMap}); }catch(e){ console.warn('saveFileNamesMap error',e); }
+}
+
+// ======== FILE UPLOAD UI STATE ========
+let roomFiles = []; // [{path, name, url, _file, _preview}] _file = pending local File
+let fvFiles = [];   // current viewer file list
+let fvIndex = 0;
+let fvScale = 1;
+
+function fileInputChange(e){
+  addFiles([...e.target.files]);
+  e.target.value='';
+}
+function fileDragOver(e){ e.preventDefault(); document.getElementById('f-upload-area').classList.add('dragover'); }
+function fileDragLeave(){ document.getElementById('f-upload-area').classList.remove('dragover'); }
+function fileDrop(e){ e.preventDefault(); fileDragLeave(); addFiles([...e.dataTransfer.files]); }
+
+function addFiles(files){
+  const remaining = 20 - roomFiles.length;
+  if(remaining <= 0){ alert('最大20ファイルまでです'); return; }
+  const toAdd = files.slice(0, remaining);
+  if(files.length > remaining) alert(`${files.length}ファイル選択されましたが、上限のため${toAdd.length}ファイルのみ追加します`);
+  toAdd.forEach(f=>{
+    const isImage = f.type.startsWith('image/');
+    const entry = {path:null, name:f.name, url:null, _file:f, _preview: isImage ? URL.createObjectURL(f) : null};
+    roomFiles.push(entry);
+  });
+  renderFileThumbs();
+}
+
+function renderFileThumbs(){
+  const grid = document.getElementById('f-thumb-grid');
+  document.getElementById('f-file-count').textContent = `${roomFiles.length} / 20 ファイル`;
+  if(!roomFiles.length){ grid.innerHTML=''; return; }
+  grid.innerHTML = roomFiles.map((f,i)=>{
+    const isImage = f._preview || (f.url && /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(f.name));
+    const isPdf   = /\.pdf$/i.test(f.name);
+    const thumb   = isImage
+      ? `<img src="${f._preview||f.url}" alt="${f.name}" loading="lazy">`
+      : `<div class="file-thumb-icon">${isPdf?'📄':'📁'}</div>`;
+    return `<div class="file-thumb" onclick="openFvFromForm(${i})" title="${f.name}">
+      ${thumb}
+      <div class="file-thumb-name">${f.name}</div>
+      <button class="file-thumb-del" onclick="event.stopPropagation();removeFormFile(${i})" title="削除">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function removeFormFile(i){
+  if(!confirm(`「${roomFiles[i].name}」を削除しますか？`)) return;
+  const f = roomFiles[i];
+  if(f.path){ storageDelete(f.path); }
+  if(f._preview) URL.revokeObjectURL(f._preview);
+  roomFiles.splice(i,1);
+  renderFileThumbs();
+}
+
+async function uploadPendingFiles(roomId){
+  let mapChanged = false;
+  for(const f of roomFiles){
+    if(f._file && !f.path){
+      try{
+        const result = await storageUpload(roomId, f._file);
+        f.path = result.path;
+        f.url  = storageUrl(f.path);
+        // ファイル名マップに追加
+        fileNamesMap[f.path] = result.originalName;
+        mapChanged = true;
+        f._file = null;
+      }catch(e){ alert('ファイルアップロード失敗: '+f.name+'\n'+e.message); }
+    }
+  }
+  // ファイル名マップを rooms テーブルに保存
+  if(mapChanged) await saveFileNamesMap(roomId);
+}
+
+async function loadRoomFiles(roomId){
+  roomFiles = await storageListRoom(roomId);
+  roomFiles.forEach(f=>{
+    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(f.name);
+    f._preview = isImage ? f.url : null;
+    f._file = null;
+  });
+  renderFileThumbs();
+}
+
+function clearRoomFiles(){
+  roomFiles.forEach(f=>{ if(f._preview && f._preview.startsWith('blob:')) URL.revokeObjectURL(f._preview); });
+  roomFiles = [];
+  renderFileThumbs();
+}
+
+// ======== FILE VIEWER ========
+function openFvFromForm(i){ fvFiles=[...roomFiles]; openFv(i); }
+
+function openFv(i){
+  fvIndex = i;
+  fvScale = 1;
+  document.getElementById('fv-overlay').classList.add('open');
+  renderFvStrip();
+  renderFvContent();
+}
+function closeFv(){ document.getElementById('fv-overlay').classList.remove('open'); }
+
+function renderFvStrip(){
+  const strip = document.getElementById('fv-strip');
+  strip.innerHTML = fvFiles.map((f,i)=>{
+    const isImage = f._preview || (f.url && /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(f.name));
+    if(isImage){
+      return `<img src="${f._preview||f.url}" class="fv-strip-thumb${i===fvIndex?' active':''}" onclick="fvGoto(${i})" title="${f.name}">`;
+    }
+    const isPdf = /\.pdf$/i.test(f.name);
+    return `<div class="fv-strip-icon${i===fvIndex?' active':''}" onclick="fvGoto(${i})" title="${f.name}">${isPdf?'📄':'📁'}</div>`;
+  }).join('');
+}
+
+function renderFvContent(){
+  const f = fvFiles[fvIndex];
+  if(!f){ return; }
+  document.getElementById('fv-title').textContent = `${fvIndex+1} / ${fvFiles.length}　${f.name}`;
+  const content = document.getElementById('fv-content');
+  const isImage = f._preview || (f.url && /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(f.name));
+  const isPdf   = /\.pdf$/i.test(f.name);
+  const src = f._preview || f.url;
+  if(isImage && src){
+    content.innerHTML = `<div class="fv-img-wrap" id="fv-imgwrap"><img id="fv-img" src="${src}" style="max-width:90vw;max-height:calc(100vh - 130px);border-radius:6px;cursor:zoom-in;user-select:none;" ondblclick="fvZoom(0.5)" draggable="false"></div>`;
+    fvScale = 1;
+  } else if(isPdf && f.url){
+    content.innerHTML = `<div class="fv-pdf-wrap"><iframe src="${f.url}" title="${f.name}"></iframe></div>`;
+  } else {
+    const icon = isPdf?'📄':'📁';
+    content.innerHTML = `<div style="text-align:center;color:#fff"><div style="font-size:72px;margin-bottom:16px">${icon}</div><div style="font-size:16px;margin-bottom:16px">${f.name}</div>${f.url?`<a href="${f.url}" target="_blank" class="fv-btn" style="display:inline-block;text-decoration:none">外部で開く / ダウンロード</a>`:'<span style="color:#aaa">プレビュー不可</span>'}</div>`;
+  }
+  // update strip active
+  document.querySelectorAll('.fv-strip-thumb,.fv-strip-icon').forEach((el,i)=>{
+    el.classList.toggle('active', i===fvIndex);
+  });
+}
+
+function fvGoto(i){ fvIndex=i; fvScale=1; renderFvContent(); }
+function fvPrev(){ if(fvIndex>0){fvIndex--;fvScale=1;renderFvContent();} }
+function fvNext(){ if(fvIndex<fvFiles.length-1){fvIndex++;fvScale=1;renderFvContent();} }
+
+function fvZoom(delta){
+  fvScale = Math.max(0.2, Math.min(5, fvScale+delta));
+  const img = document.getElementById('fv-img');
+  if(img) img.style.transform = `scale(${fvScale})`;
+}
+function fvZoomReset(){ fvScale=1; const img=document.getElementById('fv-img'); if(img)img.style.transform='scale(1)'; }
+function fvFit(){ fvScale=1; const img=document.getElementById('fv-img'); if(img){img.style.maxWidth='90vw';img.style.maxHeight='calc(100vh - 130px)';img.style.transform='scale(1)';} }
+function fvDownload(){
+  const f = fvFiles[fvIndex];
+  if(!f||!f.url) return;
+  const a=document.createElement('a'); a.href=f.url; a.download=f.name; a.target='_blank'; a.click();
+}
+
+// keyboard nav for viewer
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('fv-overlay').classList.contains('open')) return;
+  if(e.key==='ArrowLeft') fvPrev();
+  else if(e.key==='ArrowRight') fvNext();
+  else if(e.key==='Escape') closeFv();
+  else if(e.key==='+') fvZoom(0.25);
+  else if(e.key==='-') fvZoom(-0.25);
+});
+
+
+
+// ======== DATA (in-memory, synced from Supabase) ========
+let rooms = [];
+let equipment = [];
+let lendings = [];
+let aircons = [];
+let parkings = [];
+let eqLogs = [];
+let editRoomId=null, editEqId=null, roomPage=1;
+const PER=25;
+
+// ======== SUPABASE FIELD MAPPERS ========
+// JS camelCase → DB snake_case
+function roomToDb(r){
+  return {
+    site:r.site||null, name:r.name, zip:r.zip||null, address:r.address||null,
+    status:r.status||'入居中', move_in:r.moveIn||null, move_out:r.moveOut||null,
+    real_estate:r.realEstate||null, real_estate_tel:r.realEstateTel||null,
+    management:r.management||null, management_tel:r.managementTel||null,
+    electric:r.electric||null, electric_tel:r.electricTel||null,
+    water:r.water||null, water_tel:r.waterTel||null,
+    gas:r.gas||null, gas_tel:r.gasTel||null,
+    lease_co:r.leaseCo||null, lease_tel:r.leaseTel||null, lease_date:r.leaseDate||null, lease_items:r.leaseItems||null,
+    owned_furniture:r.ownedFurniture||null,
+    ins_co:r.insCo||null, ins_tel:r.insTel||null, ins_date:r.insDate||null, ins_number:r.insNumber||null,
+    parking:r.parking||null, extra_parking:r.extraParking||null,
+    pk_person:r.pkPerson||null, pk_number:r.pkNumber||null,
+    pk_mgmt:r.pkMgmt||null, pk_mgmt_tel:r.pkMgmtTel||null,
+    pk_init:r.pkInit?Number(r.pkInit):null, pk_monthly:r.pkMonthly?Number(r.pkMonthly):null,
+    pk_penalty:r.pkPenalty||null, pk_caution:r.pkCaution||null,
+    notes:r.notes||null, residents:r.residents||[]
+  };
+}
+function roomFromDb(r){
+  return {
+    id:r.id, site:r.site||'', name:r.name, zip:r.zip||'', address:r.address||'',
+    status:r.status||'入居中', moveIn:r.move_in||'', moveOut:r.move_out||'',
+    realEstate:r.real_estate||'', realEstateTel:r.real_estate_tel||'',
+    management:r.management||'', managementTel:r.management_tel||'',
+    electric:r.electric||'', electricTel:r.electric_tel||'',
+    water:r.water||'', waterTel:r.water_tel||'',
+    gas:r.gas||'', gasTel:r.gas_tel||'',
+    leaseCo:r.lease_co||'', leaseTel:r.lease_tel||'', leaseDate:r.lease_date||'', leaseItems:r.lease_items||'',
+    ownedFurniture:r.owned_furniture||'',
+    insCo:r.ins_co||'', insTel:r.ins_tel||'', insDate:r.ins_date||'', insNumber:r.ins_number||'',
+    parking:r.parking||'', extraParking:r.extra_parking||'',
+    pkPerson:r.pk_person||'', pkNumber:r.pk_number||'',
+    pkMgmt:r.pk_mgmt||'', pkMgmtTel:r.pk_mgmt_tel||'',
+    pkInit:r.pk_init||'', pkMonthly:r.pk_monthly||'',
+    pkPenalty:r.pk_penalty||'', pkCaution:r.pk_caution||'',
+    notes:r.notes||'', residents:r.residents||[]
+  };
+}
+function eqToDb(e){return{name:e.name,category:e.category||null,location:e.location||null,stock:e.stock||0,notes:e.notes||null};}
+function eqFromDb(e){return{id:e.id,name:e.name,category:e.category||'',location:e.location||'',stock:e.stock||0,notes:e.notes||''};}
+function lendingToDb(l){return{item_id:l.itemId,qty:l.qty,room_name:l.roomName||null,room_address:l.roomAddress||null,person:l.person||null,out_date:l.outDate||null,return_date:l.returnDate||null,notes:l.notes||null,status:l.status||'貸出中',from_room:l.fromRoom||false};}
+function lendingFromDb(l){return{id:l.id,itemId:l.item_id,qty:l.qty,roomName:l.room_name||'',roomAddress:l.room_address||'',person:l.person||'',outDate:l.out_date||'',returnDate:l.return_date||'',notes:l.notes||'',status:l.status,fromRoom:l.from_room||false};}
+function eqLogToDb(l){return{item_id:l.itemId,type:l.type,qty:l.qty,person:l.person||null,log_date:l.date||null,log_time:l.time||null,memo:l.memo||null,stock_after:l.stockAfter};}
+function eqLogFromDb(l){return{id:l.id,itemId:l.item_id,type:l.type,qty:l.qty,person:l.person||'',date:l.log_date||'',time:l.log_time||'',memo:l.memo||'',stockAfter:l.stock_after};}
+function airconToDb(a){return{model:a.model,status:a.status||'未使用',site:a.site||null,room_name:a.roomName||null,buy_date:a.buyDate||null,buy_cost:a.buyCost!=null?Number(a.buyCost):null,start_date:a.startDate||null,end_date:a.endDate||null,install_co:a.installCo||null,install_tel:a.installTel||null,install_memo:a.installMemo||null,remove_co:a.removeCo||null,remove_tel:a.removeTel||null,remove_memo:a.removeMemo||null};}
+function airconFromDb(a){return{id:a.id,model:a.model,status:a.status||'未使用',site:a.site||'',roomName:a.room_name||'',buyDate:a.buy_date||'',buyCost:a.buy_cost,startDate:a.start_date||'',endDate:a.end_date||'',installCo:a.install_co||'',installTel:a.install_tel||'',installMemo:a.install_memo||'',removeCo:a.remove_co||'',removeTel:a.remove_tel||'',removeMemo:a.remove_memo||''};}
+function parkingToDb(p){return{site:p.site||null,room_name:p.roomName||null,pk_name:p.pkName||null,person:p.person||null,car_number:p.carNumber||null,mgmt:p.mgmt||null,mgmt_tel:p.mgmtTel||null,init_cost:p.initCost!=null?Number(p.initCost):null,monthly:p.monthly!=null?Number(p.monthly):null,penalty:p.penalty||null,caution:p.caution||null};}
+function parkingFromDb(p){return{id:p.id,site:p.site||'',roomName:p.room_name||'',pkName:p.pk_name||'',person:p.person||'',carNumber:p.car_number||'',mgmt:p.mgmt||'',mgmtTel:p.mgmt_tel||'',initCost:p.init_cost,monthly:p.monthly,penalty:p.penalty||'',caution:p.caution||''};}
+
+// ======== SUPABASE CRUD WRAPPERS ========
+// Rooms
+async function dbSaveRoom(o){
+  showLoading(true);
+  try{
+    const data=roomToDb(o);
+    if(o.id){
+      const res=await SB.update('rooms',o.id,data);
+      const idx=rooms.findIndex(x=>x.id===o.id);
+      if(idx>=0)rooms[idx]=roomFromDb(res[0]);
+    }else{
+      const res=await SB.insert('rooms',data);
+      const nr=roomFromDb(res[0]);
+      rooms.push(nr);
+      return nr;
+    }
+  }catch(e){alert('保存エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+async function dbDeleteRoom(id){
+  showLoading(true);
+  try{await SB.del('rooms',id);rooms=rooms.filter(x=>x.id!==id);}
+  catch(e){alert('削除エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+// Equipment
+async function dbSaveEquipment(o){
+  showLoading(true);
+  try{
+    const data=eqToDb(o);
+    if(o.id){const res=await SB.update('equipment',o.id,data);const idx=equipment.findIndex(x=>x.id===o.id);if(idx>=0)equipment[idx]=eqFromDb(res[0]);}
+    else{const res=await SB.insert('equipment',data);equipment.push(eqFromDb(res[0]));}
+  }catch(e){alert('保存エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+async function dbDeleteEquipment(id){
+  showLoading(true);
+  try{await SB.del('equipment',id);equipment=equipment.filter(x=>x.id!==id);}
+  catch(e){alert('削除エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+async function dbUpdateEquipmentStock(id, stock){
+  try{await SB.update('equipment',id,{stock});}catch(e){console.error(e);}
+}
+// Lendings
+async function dbInsertLending(o){
+  try{const res=await SB.insert('lendings',lendingToDb(o));const nl=lendingFromDb(res[0]);lendings.push(nl);return nl;}
+  catch(e){alert('貸出記録エラー: '+e.message);}
+}
+async function dbUpdateLending(id, data){
+  try{await SB.update('lendings',id,data);}catch(e){console.error(e);}
+}
+async function dbDeleteLending(id){
+  try{await SB.del('lendings',id);lendings=lendings.filter(x=>x.id!==id);}
+  catch(e){alert('削除エラー: '+e.message);}
+}
+// EqLogs
+async function dbInsertEqLog(o){
+  try{const res=await SB.insert('eq_logs',eqLogToDb(o));eqLogs.push(eqLogFromDb(res[0]));}
+  catch(e){console.error('eqLog error',e);}
+}
+// Aircons
+async function dbSaveAircon(o){
+  showLoading(true);
+  try{
+    const data=airconToDb(o);
+    if(o.id){const res=await SB.update('aircons',o.id,data);const idx=aircons.findIndex(x=>x.id===o.id);if(idx>=0)aircons[idx]=airconFromDb(res[0]);}
+    else{const res=await SB.insert('aircons',data);aircons.push(airconFromDb(res[0]));}
+  }catch(e){alert('保存エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+async function dbDeleteAircon(id){
+  showLoading(true);
+  try{await SB.del('aircons',id);aircons=aircons.filter(x=>x.id!==id);}
+  catch(e){alert('削除エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+async function dbUpdateAircon(id, data){
+  try{await SB.update('aircons',id,airconToDb(data));}catch(e){console.error(e);}
+}
+// Parkings
+async function dbSaveParking(o){
+  showLoading(true);
+  try{
+    const data=parkingToDb(o);
+    if(o.id){const res=await SB.update('parkings',o.id,data);const idx=parkings.findIndex(x=>x.id===o.id);if(idx>=0)parkings[idx]=parkingFromDb(res[0]);}
+    else{const res=await SB.insert('parkings',data);parkings.push(parkingFromDb(res[0]));}
+  }catch(e){alert('保存エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+async function dbDeleteParking(id){
+  showLoading(true);
+  try{await SB.del('parkings',id);parkings=parkings.filter(x=>x.id!==id);}
+  catch(e){alert('削除エラー: '+e.message);}
+  finally{showLoading(false);}
+}
+
+// ======== LOADING SPINNER ========
+function showLoading(on){
+  let el=document.getElementById('global-loading');
+  if(!el){el=document.createElement('div');el.id='global-loading';el.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.25);z-index:9999;display:flex;align-items:center;justify-content:center;font-size:32px;';el.innerHTML='<div style="background:#fff;border-radius:12px;padding:20px 32px;font-size:14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.2)"><span style="animation:spin 1s linear infinite;display:inline-block">⏳</span> 保存中...</div>';document.body.appendChild(el);}
+  el.style.display=on?'flex':'none';
+}
+
+// ======== LOAD ALL DATA FROM SUPABASE ========
+async function loadAllData(){
+  showLoading(true);
+  try{
+    const [r,e,l,a,p,lg]=await Promise.all([
+      SB.get('rooms','order=id.asc'),
+      SB.get('equipment','order=id.asc'),
+      SB.get('lendings','order=id.asc'),
+      SB.get('aircons','order=id.asc'),
+      SB.get('parkings','order=id.asc'),
+      SB.get('eq_logs','order=id.asc'),
+    ]);
+    rooms=r.map(roomFromDb);
+    equipment=e.map(eqFromDb);
+    lendings=l.map(lendingFromDb);
+    aircons=a.map(airconFromDb);
+    parkings=p.map(parkingFromDb);
+    eqLogs=lg.map(eqLogFromDb);
+  }catch(err){
+    console.error('Supabase load error:',err);
+    document.body.innerHTML='<div style="padding:40px;text-align:center;font-family:sans-serif"><h2 style="color:#dc2626">⚠️ Supabase接続エラー</h2><p style="margin-top:12px;color:#64748b">'+err.message+'</p><p style="margin-top:8px;color:#64748b;font-size:12px">SQLテーブルが作成済みか確認してください</p></div>';
+  }finally{showLoading(false);}
+}
+
+// ======== LEGACY COMPAT: sync functions (now no-ops, replaced by async db calls) ========
+function save(){/* replaced by dbSaveRoom/dbSaveEquipment */}
+function saveLendings(){/* replaced by dbInsertLending/dbUpdateLending */}
+function saveAircons(){/* replaced by dbSaveAircon */}
+function saveParkings(){/* replaced by dbSaveParking */}
+function saveEqLogs(){/* replaced by dbInsertEqLog */}
+
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'});}
+function daysUntil(d){if(!d)return null;const t=new Date();t.setHours(0,0,0,0);const x=new Date(d);x.setHours(0,0,0,0);return Math.round((x-t)/86400000);}
+function alertBadge(d){if(!d)return'<span class="badge badge-empty">未設定</span>';const n=daysUntil(d);if(n<0)return'<span class="badge badge-danger">期限切れ</span>';if(n<=30)return`<span class="badge badge-danger">${n}日後</span>`;if(n<=60)return`<span class="badge badge-warn">${n}日後</span>`;return`<span class="badge badge-ok">${fmtDate(d)}</span>`;}
+function statusBadge(s){if(s==='入居中')return'<span class="badge badge-ok">入居中</span>';if(s==='空室')return'<span class="badge badge-blue">空室</span>';return'<span class="badge badge-empty">解約済</span>';}
+function genId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1;}
+function wl(n){return Array(n).fill('<div class="write-line"></div>').join('');}
+function residentSummary(r){const names=(r.residents||[]).filter(x=>x.name).map(x=>x.name);return names.length?names.join('・'):'—';}
+function allSites(){return[...new Set(rooms.map(r=>r.site).filter(Boolean))].sort();}
+
+// ======== TABS ========
+function showTab(tab,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(tab==='dashboard')renderDashboard();
+  if(tab==='rooms')renderRooms();
+  if(tab==='sites')renderSites();
+  if(tab==='parking')renderParking();
+  if(tab==='aircon')renderAircon();
+  if(tab==='alerts')renderAlerts();
+  if(tab==='equipment')renderEquipment();
+}
+
+// ======== DASHBOARD ========
+function renderDashboard(){
+  const total=rooms.length,occ=rooms.filter(r=>r.status==='入居中').length,vac=rooms.filter(r=>r.status==='空室').length;
+  const sites=allSites().length;
+  const allAl=getAlerts(60),crit=getAlerts(30).length;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-label">総宿舎数</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--success)">${occ}</div><div class="stat-label">入居中</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent2)">${vac}</div><div class="stat-label">空室</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#7c3aed">${sites}</div><div class="stat-label">現場数</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--warn)">${allAl.length}</div><div class="stat-label">60日以内更新</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--danger)">${crit}</div><div class="stat-label">30日以内更新</div></div>
+    <div class="stat-card"><div class="stat-val">${equipment.reduce((s,e)=>s+e.stock,0)}</div><div class="stat-label">倉庫備品総数</div></div>`;
+  const ab=document.getElementById('alert-bar-container');
+  if(crit>0)ab.innerHTML=`<div class="alert-bar"><div style="font-size:18px">🚨</div><div style="flex:1"><strong>緊急：</strong>30日以内に更新が必要な契約があります。</div><div class="alert-count">${crit}件</div></div>`;
+  else if(allAl.length>0)ab.innerHTML=`<div class="alert-bar"><div style="font-size:18px">⚠️</div><div style="flex:1"><strong>注意：</strong>60日以内に更新が必要な契約があります。</div><div class="alert-count">${allAl.length}件</div></div>`;
+  else ab.innerHTML='';
+  document.getElementById('alert-badge').textContent=allAl.length?`(${allAl.length})`:'';
+  const da=document.getElementById('dash-alerts');
+  if(!allAl.length){da.innerHTML='<div class="empty-state"><div class="icon">✅</div><p>60日以内の更新はありません</p></div>';}
+  else da.innerHTML=allAl.slice(0,8).map(a=>{
+    const c=a.days<=30?'critical':'',col=a.days<=30?'var(--danger)':'var(--warn)';
+    return`<div class="alert-item ${c}"><div style="font-size:20px">${a.type==='lease'?'🪑':'🛡️'}</div>
+      <div class="alert-item-content"><div class="alert-item-title">${a.roomName}${a.site?' <span style="font-size:11px;color:var(--text2)">（'+a.site+'）</span>':''}</div>
+      <div class="alert-item-sub">${a.type==='lease'?'家具リース':'火災保険'} — ${a.company}</div></div>
+      <div class="alert-days" style="color:${col}">${a.days<0?'期限切れ':a.days+'日後'}</div></div>`;
+  }).join('');
+  document.getElementById('dash-recent').innerHTML=`<table><thead><tr><th>現場名</th><th>部屋名</th><th>入居者</th><th>状態</th></tr></thead><tbody>
+    ${[...rooms].sort((a,b)=>b.id-a.id).slice(0,5).map(r=>`<tr><td>${r.site||'—'}</td><td>${r.name}</td><td style="font-size:12px">${residentSummary(r)}</td><td>${statusBadge(r.status)}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function getAlerts(days){
+  const a=[];
+  rooms.forEach(r=>{
+    if(r.leaseDate){const d=daysUntil(r.leaseDate);if(d!==null&&d<=days)a.push({roomName:r.name,site:r.site,type:'lease',company:r.leaseCo||'未設定',days:d,date:r.leaseDate});}
+    if(r.insDate){const d=daysUntil(r.insDate);if(d!==null&&d<=days)a.push({roomName:r.name,site:r.site,type:'insurance',company:r.insCo||'未設定',days:d,date:r.insDate});}
+  });
+  return a.sort((a,b)=>a.days-b.days);
+}
+
+// ======== ROOMS ========
+function renderRooms(){
+  // rebuild site filter
+  const sf=document.getElementById('room-site-filter'),curSite=sf.value;
+  sf.innerHTML='<option value="">全現場</option>'+allSites().map(s=>`<option value="${s}" ${s===curSite?'selected':''}>${s}</option>`).join('');
+
+  const q=document.getElementById('room-search').value.toLowerCase();
+  const siteF=document.getElementById('room-site-filter').value;
+  const statusF=document.getElementById('room-status-filter').value;
+  let fl=rooms.filter(r=>{
+    const resStr=(r.residents||[]).map(x=>x.name).join(' ').toLowerCase();
+    const match=!q||(r.name+r.address+(r.site||'')).toLowerCase().includes(q)||resStr.includes(q);
+    return match&&(!siteF||r.site===siteF)&&(!statusF||r.status===statusF);
+  });
+  const total=fl.length,pages=Math.max(1,Math.ceil(total/PER));
+  if(roomPage>pages)roomPage=pages;
+  const start=(roomPage-1)*PER,paged=fl.slice(start,start+PER);
+  const tbody=document.getElementById('room-tbody');
+  if(!paged.length){tbody.innerHTML=`<tr><td colspan="17"><div class="empty-state"><div class="icon">🏠</div><p>宿舎が見つかりません</p></div></td></tr>`;return;}
+  tbody.innerHTML=paged.map(r=>{
+    const resHtml=(r.residents||[]).filter(x=>x.name).map(x=>`<div style="white-space:nowrap">${x.name}${x.note?'<span style="color:var(--text3);font-size:11px;"> ('+x.note+')</span>':''}</div>`).join('') || '<span style="color:var(--text3)">—</span>';
+    return`<tr>
+      <td><span class="badge badge-purple" style="white-space:nowrap">${r.site||'—'}</span></td>
+      <td><strong>${r.name}</strong></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${r.zip||'—'}</td>
+      <td class="wrap">${r.address||'—'}</td>
+      <td>${resHtml}</td>
+      <td>${r.realEstate||'—'}</td><td>${r.management||'—'}</td>
+      <td>${r.electric||'—'}</td><td>${r.water||'—'}</td>
+      <td>${alertBadge(r.leaseDate)}</td><td>${alertBadge(r.insDate)}</td>
+      <td>${r.parking||'—'}</td><td>${r.extraParking||'—'}</td>
+      <td style="font-size:12px">${fmtDate(r.moveIn)}</td>
+      <td style="font-size:12px">${r.moveOut?fmtDate(r.moveOut):'—'}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="editRoom(${r.id})">編集</button>
+        <button class="btn btn-print btn-sm" onclick="openPrintModal(${r.id})" style="margin-left:4px" title="退去チェックシート">🖨️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteRoom(${r.id})" style="margin-left:4px">削除</button>
+      </td>
+    </tr>`;
+  }).join('');
+  let pag=`<span class="page-info">${total}件中 ${start+1}–${Math.min(start+PER,total)}件</span>`;
+  pag+=`<button class="page-btn" onclick="roomPage=Math.max(1,roomPage-1);renderRooms()">‹</button>`;
+  for(let i=1;i<=pages;i++){
+    if(pages>7&&i>2&&i<pages-1&&Math.abs(i-roomPage)>1){if(i===3||i===pages-2)pag+='<span style="color:var(--text3);padding:0 4px">…</span>';continue;}
+    pag+=`<button class="page-btn ${i===roomPage?'active':''}" onclick="roomPage=${i};renderRooms()">${i}</button>`;
+  }
+  pag+=`<button class="page-btn" onclick="roomPage=Math.min(${pages},roomPage+1);renderRooms()">›</button>`;
+  document.getElementById('room-pagination').innerHTML=pag;
+}
+
+// ======== SITES ========
+function renderSites(){
+  const q=document.getElementById('site-search').value.toLowerCase();
+  const sites=allSites().filter(s=>!q||s.toLowerCase().includes(q));
+  const summary=document.getElementById('site-summary');
+  summary.innerHTML=`<div class="stats-row" style="margin-bottom:0">${sites.map(s=>{
+    const sr=rooms.filter(r=>r.site===s);
+    const occ=sr.filter(r=>r.status==='入居中').length;
+    const res=sr.flatMap(r=>(r.residents||[]).filter(x=>x.name)).length;
+    return`<div class="stat-card" style="cursor:pointer" onclick="filterBySite('${s}')">
+      <div style="font-size:11px;color:#7c3aed;font-weight:700;margin-bottom:4px">${s}</div>
+      <div class="stat-val" style="font-size:20px">${sr.length}</div>
+      <div class="stat-label">宿舎 / 入居中${occ} / 入居者${res}名</div>
+    </div>`;
+  }).join('')}</div>`;
+  if(!sites.length){document.getElementById('site-grid').innerHTML='<div class="empty-state"><div class="icon">🏗️</div><p>現場が見つかりません</p></div>';return;}
+  document.getElementById('site-grid').innerHTML=sites.map(s=>{
+    const sr=rooms.filter(r=>r.site===s);
+    const occ=sr.filter(r=>r.status==='入居中').length;
+    const vac=sr.filter(r=>r.status==='空室').length;
+    const crit=sr.filter(r=>{const ld=daysUntil(r.leaseDate),id=daysUntil(r.insDate);return(ld!==null&&ld<=30)||(id!==null&&id<=30);}).length;
+    return`<div class="site-card">
+      <div class="site-card-header">
+        <div><div class="site-card-name">🏗️ ${s}</div><div style="font-size:11px;color:#93c5fd;margin-top:2px">${sr.length}宿舎 ／ 入居中${occ} ／ 空室${vac}</div></div>
+        <div class="site-card-count">${sr.length}</div>
+      </div>
+      <div class="site-card-body">
+        ${crit>0?`<div style="font-size:11px;color:var(--danger);margin-bottom:8px;font-weight:600">⚠️ 更新期限が近い契約: ${crit}件</div>`:''}
+        <div style="font-size:11px;color:var(--text2);font-weight:700;margin-bottom:6px;letter-spacing:.06em;">宿舎一覧</div>
+        <div class="site-room-list">
+          ${sr.map(r=>{
+            const names=(r.residents||[]).filter(x=>x.name).map(x=>x.name);
+            return`<div class="site-room-item">
+              <div>
+                <div class="site-room-name">${r.name} ${statusBadge(r.status)}</div>
+                <div class="site-room-residents">${names.length?names.join('・'):'（空室）'}</div>
+              </div>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-ghost btn-sm" onclick="editRoom(${r.id})" style="padding:3px 7px;font-size:11px">編集</button>
+                <button class="btn btn-print btn-sm" onclick="openPrintModal(${r.id})" style="padding:3px 7px;font-size:11px" title="退去チェックシート">🖨️</button>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="margin-top:10px;text-align:right">
+          <button class="btn btn-ghost btn-sm" onclick="filterBySite('${s}')">一覧で開く →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterBySite(site){
+  showTab('rooms', document.querySelectorAll('.tab-btn')[1]);
+  document.getElementById('room-site-filter').value=site;
+  renderRooms();
+}
+
+// ======== ROOM MODAL ========
+function openRoomModal(){
+  editRoomId=null;
+  fileNamesMap={};
+  document.getElementById('room-modal-title').textContent='宿舎を追加';
+  document.getElementById('modal-print-btn').style.display='none';
+  clearForm();
+  clearRoomFiles();
+  updateSiteDatalist();
+  document.getElementById('room-modal').classList.add('open');
+}
+async function editRoom(id){
+  const r=rooms.find(x=>x.id===id);if(!r)return;
+  editRoomId=id;
+  document.getElementById('room-modal-title').textContent='宿舎を編集 — '+r.name;
+  document.getElementById('modal-print-btn').style.display='flex';
+  fillForm(r);
+  clearRoomFiles();
+  fileNamesMap={};
+  await loadFileNamesMap(id);
+  loadRoomFiles(id);
+  updateSiteDatalist();
+  document.getElementById('room-modal').classList.add('open');
+}
+function closeRoomModal(){document.getElementById('room-modal').classList.remove('open');clearRoomFiles();}
+function updateSiteDatalist(){
+  document.getElementById('site-datalist').innerHTML=allSites().map(s=>`<option value="${s}">`).join('');
+}
+
+const FIELDS=[['f-site','site'],['f-name','name'],['f-zip','zip'],['f-address','address'],['f-status','status'],['f-move-in','moveIn'],['f-move-out','moveOut'],['f-realestate','realEstate'],['f-realestate-tel','realEstateTel'],['f-management','management'],['f-management-tel','managementTel'],['f-electric','electric'],['f-electric-tel','electricTel'],['f-water','water'],['f-water-tel','waterTel'],['f-gas','gas'],['f-gas-tel','gasTel'],['f-lease-co','leaseCo'],['f-lease-tel','leaseTel'],['f-lease-date','leaseDate'],['f-lease-items','leaseItems'],['f-ins-co','insCo'],['f-ins-tel','insTel'],['f-ins-date','insDate'],['f-ins-number','insNumber'],['f-parking','parking'],['f-extra-parking','extraParking'],['f-pk-person','pkPerson'],['f-pk-number','pkNumber'],['f-pk-mgmt','pkMgmt'],['f-pk-mgmt-tel','pkMgmtTel'],['f-pk-init','pkInit'],['f-pk-monthly','pkMonthly'],['f-pk-penalty','pkPenalty'],['f-pk-caution','pkCaution'],['f-notes','notes']];
+
+// ---- equipment rows in room modal ----
+// roomEquipRows: [{itemId, qty, outDate, returnDate, notes, _lendId}]
+// _lendId: existing lending record id (if editing)
+let roomEquipRows = [];
+// ---- aircon rows in room modal ----
+// roomAcRows: [{acId, startDate, endDate, removeCo, removeTel, removeMemo}]
+let roomAcRows = [];
+
+function refreshEqAddSelect(){
+  const sel = document.getElementById('f-eq-add-select');
+  sel.innerHTML = '<option value="">── 備品を選択 ──</option>' +
+    equipment.map(e => {
+      const alreadyUsed = roomEquipRows.reduce((s,row)=> s + (row.itemId===e.id ? row.qty : 0), 0);
+      return `<option value="${e.id}">${e.name}（倉庫在庫: ${e.stock} / カテゴリ: ${e.category||'—'}）</option>`;
+    }).join('');
+}
+
+function refreshAcAddSelect(){
+  const sel = document.getElementById('f-ac-add-select');
+  sel.innerHTML = '<option value="">── 型番を選択（エアコンタブで先に登録）──</option>' +
+    aircons.filter(a=>a.status!=='使用中'||roomAcRows.some(r=>r.acId===a.id)).map(a =>
+      `<option value="${a.id}">${a.model}${a.status==='未使用'?' ✅未使用':' ('+a.status+')'}</option>`
+    ).join('');
+}
+
+function renderRoomEquipTable(){
+  const tbody = document.getElementById('f-eq-tbody');
+  if(!roomEquipRows.length){
+    tbody.innerHTML='<tr id="f-eq-empty-row"><td colspan="6" style="text-align:center;color:var(--text3);font-size:12px;padding:10px">備品が追加されていません</td></tr>';
+    return;
+  }
+  tbody.innerHTML = roomEquipRows.map((row, idx) => {
+    const eq = equipment.find(e=>e.id===row.itemId);
+    const name = eq ? eq.name : '（削除済）';
+    return `<tr>
+      <td style="padding:4px 8px;font-weight:600;font-size:12px">${name}</td>
+      <td><input type="number" min="1" value="${row.qty}" style="width:60px;padding:3px 5px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:#fff" onchange="roomEquipRows[${idx}].qty=Math.max(1,parseInt(this.value)||1)"></td>
+      <td><input type="date" value="${row.outDate||''}" style="padding:3px 5px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomEquipRows[${idx}].outDate=this.value"></td>
+      <td><input type="date" value="${row.returnDate||''}" style="padding:3px 5px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomEquipRows[${idx}].returnDate=this.value"></td>
+      <td><input type="text" value="${row.notes||''}" placeholder="メモ" style="padding:3px 5px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomEquipRows[${idx}].notes=this.value"></td>
+      <td><button class="eq-row-remove" onclick="removeRoomEquipRow(${idx})" title="削除">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function addRoomEquipmentRow(){
+  const sel = document.getElementById('f-eq-add-select');
+  const itemId = parseInt(sel.value);
+  if(!itemId){ alert('備品を選択してください'); return; }
+  const eq = equipment.find(e=>e.id===itemId);
+  const alreadyInRows = roomEquipRows.reduce((s,row)=> s+(row.itemId===itemId?row.qty:0), 0);
+  if(eq && eq.stock - alreadyInRows <= 0){
+    if(!confirm(`「${eq.name}」の倉庫在庫が不足しています（在庫:${eq.stock}、選択済:${alreadyInRows}）。続けますか？`)) return;
+  }
+  roomEquipRows.push({itemId, qty:1, outDate:new Date().toISOString().split('T')[0], returnDate:'', notes:'', _lendId:null});
+  sel.value='';
+  renderRoomEquipTable();
+}
+
+function removeRoomEquipRow(idx){
+  roomEquipRows.splice(idx,1);
+  renderRoomEquipTable();
+}
+
+function renderRoomAcTable(){
+  const tbody = document.getElementById('f-ac-tbody');
+  if(!roomAcRows.length){
+    tbody.innerHTML='<tr id="f-ac-empty-row"><td colspan="7" style="text-align:center;color:var(--text3);font-size:12px;padding:10px">エアコンが追加されていません</td></tr>';
+    return;
+  }
+  tbody.innerHTML = roomAcRows.map((row, idx) => {
+    const ac = aircons.find(a=>a.id===row.acId);
+    const model = ac ? ac.model : '（削除済）';
+    return `<tr>
+      <td style="padding:4px 8px;font-weight:600;font-size:12px">${model}</td>
+      <td><input type="date" value="${row.startDate||''}" style="padding:3px 5px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomAcRows[${idx}].startDate=this.value"></td>
+      <td><input type="date" value="${row.endDate||''}" style="padding:3px 5px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomAcRows[${idx}].endDate=this.value"></td>
+      <td><input type="text" value="${row.removeCo||''}" placeholder="取り外し業者" style="padding:3px 5px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomAcRows[${idx}].removeCo=this.value"></td>
+      <td><input type="text" value="${row.removeTel||''}" placeholder="電話番号" style="padding:3px 5px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomAcRows[${idx}].removeTel=this.value"></td>
+      <td><input type="text" value="${row.removeMemo||''}" placeholder="メモ" style="padding:3px 5px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:#fff;width:100%" onchange="roomAcRows[${idx}].removeMemo=this.value"></td>
+      <td><button class="eq-row-remove" onclick="removeRoomAcRow(${idx})" title="削除">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function addRoomAcRow(){
+  const sel = document.getElementById('f-ac-add-select');
+  const acId = parseInt(sel.value);
+  if(!acId){ alert('エアコンを選択してください'); return; }
+  if(roomAcRows.some(r=>r.acId===acId)){ alert('すでに追加されています'); return; }
+  roomAcRows.push({acId, startDate:new Date().toISOString().split('T')[0], endDate:'', removeCo:'', removeTel:'', removeMemo:''});
+  sel.value='';
+  renderRoomAcTable();
+}
+
+function removeRoomAcRow(idx){
+  roomAcRows.splice(idx,1);
+  renderRoomAcTable();
+}
+
+function clearForm(){
+  FIELDS.forEach(([id])=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-status').value='入居中';
+  getResidentInputs().forEach(({nameEl,noteEl})=>{nameEl.value='';noteEl.value='';});
+  roomEquipRows=[];
+  renderRoomEquipTable();
+  refreshEqAddSelect();
+  roomAcRows=[];
+  renderRoomAcTable();
+  refreshAcAddSelect();
+}
+
+function fillForm(r){
+  FIELDS.forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.value=r[key]||'';});
+  const rows=getResidentInputs();
+  (r.residents||[]).forEach((res,i)=>{if(rows[i]){rows[i].nameEl.value=res.name||'';rows[i].noteEl.value=res.note||'';}});
+  // load existing lendings for this room
+  roomEquipRows = lendings
+    .filter(l=>l.roomName===r.name && l.status==='貸出中' && l.fromRoom===true)
+    .map(l=>({itemId:l.itemId, qty:l.qty, outDate:l.outDate||'', returnDate:l.returnDate||'', notes:l.notes||'', _lendId:l.id}));
+  if(document.getElementById('f-owned-furniture')) document.getElementById('f-owned-furniture').value=r.ownedFurniture||'';
+  renderRoomEquipTable();
+  refreshEqAddSelect();
+  // load aircon rows for this room
+  roomAcRows = aircons
+    .filter(a=>a.roomName===r.name && a.status==='使用中')
+    .map(a=>({acId:a.id, startDate:a.startDate||'', endDate:a.endDate||'', removeCo:a.removeCo||'', removeTel:a.removeTel||'', removeMemo:a.removeMemo||''}));
+  renderRoomAcTable();
+  refreshAcAddSelect();
+}
+
+function readForm(){
+  const o={};FIELDS.forEach(([id,key])=>{const el=document.getElementById(id);if(el)o[key]=el.value;});
+  o.residents=getResidentInputs().map(({nameEl,noteEl})=>({name:nameEl.value.trim(),note:noteEl.value.trim()}));
+  return o;
+}
+
+function getResidentInputs(){
+  const names=[...document.querySelectorAll('.res-name')];
+  const notes=[...document.querySelectorAll('.res-note')];
+  return names.map((nameEl,i)=>({nameEl,noteEl:notes[i]}));
+}
+
+async function saveRoom(){
+  const o=readForm();if(!o.name.trim()){alert('部屋名は必須です');return;}o.name=o.name.trim();
+
+  // --- sync equipment / lendings ---
+  const prevLends = lendings.filter(l=>l.roomName===o.name && l.status==='貸出中' && l.fromRoom===true);
+  for(const l of prevLends){
+    const eq=equipment.find(e=>e.id===l.itemId);
+    if(eq){eq.stock+=l.qty; await dbUpdateEquipmentStock(eq.id,eq.stock);}
+    l.status='返却済';
+    await dbUpdateLending(l.id,{status:'返却済'});
+  }
+  for(const row of roomEquipRows){
+    const eq=equipment.find(e=>e.id===row.itemId);
+    if(eq){eq.stock=Math.max(0,eq.stock-row.qty); await dbUpdateEquipmentStock(eq.id,eq.stock);}
+    await dbInsertLending({itemId:row.itemId,qty:row.qty,roomName:o.name,roomAddress:o.address||'',person:'',outDate:row.outDate,returnDate:row.returnDate,notes:row.notes,status:'貸出中',fromRoom:true});
+  }
+  o.ownedFurniture = roomEquipRows.map(row=>{const eq=equipment.find(e=>e.id===row.itemId);return eq?`${eq.name}×${row.qty}`:''}).filter(Boolean).join('・');
+
+  // --- sync aircons ---
+  for(const a of aircons.filter(a=>a.roomName===o.name && a.status==='使用中')){
+    if(!roomAcRows.some(r=>r.acId===a.id)){
+      a.status='取り外し済'; a.roomName='';
+      await dbUpdateAircon(a.id,a);
+    }
+  }
+  for(const row of roomAcRows){
+    const ac=aircons.find(a=>a.id===row.acId);
+    if(ac){
+      ac.roomName=o.name; ac.site=o.site||''; ac.status='使用中';
+      ac.startDate=row.startDate||ac.startDate||''; ac.endDate=row.endDate||'';
+      ac.removeCo=row.removeCo||''; ac.removeTel=row.removeTel||''; ac.removeMemo=row.removeMemo||'';
+      await dbUpdateAircon(ac.id,ac);
+    }
+  }
+
+  if(editRoomId){
+    o.id=editRoomId;
+    await dbSaveRoom(o);
+    await uploadPendingFiles(editRoomId);
+  }else{
+    const nr=await dbSaveRoom(o);
+    if(nr){ o.id=nr.id; await uploadPendingFiles(nr.id); }
+  }
+  closeRoomModal(); renderRooms(); renderDashboard();
+}
+
+async function deleteRoom(id){if(!confirm('この宿舎を削除しますか？'))return;await dbDeleteRoom(id);renderRooms();renderDashboard();}
+function printCurrentRoom(){if(editRoomId)openPrintModal(editRoomId);}
+
+// ======== PRINT ========
+function openPrintModal(id){const r=rooms.find(x=>x.id===id);if(!r)return;buildPrintSheet(r);document.getElementById('print-modal').classList.add('open');}
+function closePrintModal(){document.getElementById('print-modal').classList.remove('open');}
+
+function buildPrintSheet(r){
+  const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'});
+  const res=(r.residents||[]).filter(x=>x.name);
+  const checklist=[
+    {label:'不動産屋',name:r.realEstate||'—',tel:r.realEstateTel||''},
+    {label:'管理会社',name:r.management||'—',tel:r.managementTel||''},
+    {label:'電気会社',name:r.electric||'—',tel:r.electricTel||''},
+    {label:'水道会社',name:r.water||'—',tel:r.waterTel||''},
+    {label:'ガス会社',name:r.gas||'—',tel:r.gasTel||''},
+    {label:'家具リース',name:r.leaseCo||'—',tel:r.leaseTel||''},
+    {label:'火災保険',name:r.insCo||'—',tel:r.insTel||''},
+  ];
+  if(r.extraParking&&r.extraParking!=='なし')checklist.push({label:'追加駐車場',name:r.extraParking,tel:''});
+  checklist.push({label:'その他①',name:'',tel:''},{label:'その他②',name:'',tel:''});
+
+  const rows=checklist.map(c=>`<tr>
+    <td class="td-label">${c.label}</td>
+    <td class="td-company">${c.name?`<div style="font-weight:600;font-size:10.5px">${c.name}</div>`:''}${c.tel?`<div style="font-size:9.5px;color:#4a6080">${c.tel}</div>`:''}</td>
+    <td class="td-write" style="min-width:76px;"></td>
+    <td class="td-write" style="min-width:76px;"></td>
+    <td class="td-check"><div class="checkbox-sq"></div></td>
+    <td class="td-write" style="min-width:110px;"></td>
+  </tr>`).join('');
+
+  document.getElementById('print-sheet-content').innerHTML=`
+    <div class="sheet-head">
+      <div class="sheet-head-label">退去チェックシート</div>
+      <div class="sheet-head-main">
+        <div class="sheet-room-name">${r.name}${r.site?` <span style="font-size:13px;color:#4a6080;font-weight:400">（${r.site}）</span>`:''}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px;">
+          <div style="font-size:13px;color:#1e2a3a;font-weight:500;">📮 〒${r.zip||'　　　　　'}&emsp;📍 ${r.address||'住所未設定'}</div>
+          <div class="sheet-meta-row">
+            <span style="margin-left:auto;font-size:10px">出力日: ${today}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title">基本情報</div>
+      <div class="sheet-info-grid col4">
+        <div class="info-cell"><div class="ic-label">現場名</div><div class="ic-value">${r.site||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">入居日</div><div class="ic-value">${fmtDate(r.moveIn)}</div></div>
+        <div class="info-cell"><div class="ic-label">解約日</div><div class="ic-value">${r.moveOut?fmtDate(r.moveOut):'　　年　　月　　日'}</div></div>
+        <div class="info-cell"><div class="ic-label">駐車場（物件内）</div><div class="ic-value">${r.parking||'—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title">入居者</div>
+      <table class="sheet-res-table">
+        <thead><tr><th style="width:20px">#</th><th>氏名</th><th>備考（所属・職種）</th></tr></thead>
+        <tbody>
+          ${Array(5).fill(0).map((_,i)=>{
+            const res_i=(r.residents||[])[i];
+            const nm=res_i&&res_i.name?res_i.name:'';
+            const nt=res_i&&res_i.note?res_i.note:'';
+            return`<tr>
+              <td style="text-align:center;color:#4a6080;font-size:10px">${i+1}</td>
+              <td style="min-width:130px;background:${nm?'#fff':'#fffdf5'}">${nm||'<div class="write-line" style="margin:2px 0"></div>'}</td>
+              <td style="background:${nt?'#fff':'#fffdf5'}">${nt||'<div class="write-line" style="margin:2px 0"></div>'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title">保険・リース情報</div>
+      <div class="sheet-info-grid col4">
+        <div class="info-cell"><div class="ic-label">家具リース会社</div><div class="ic-value">${r.leaseCo||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">リース更新日</div><div class="ic-value">${fmtDate(r.leaseDate)}</div></div>
+        <div class="info-cell"><div class="ic-label">火災保険会社</div><div class="ic-value">${r.insCo||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">更新日 / 証券番号</div><div class="ic-value">${fmtDate(r.insDate)}${r.insNumber?' / '+r.insNumber:''}</div></div>
+      </div>
+    </div>
+
+    ${r.ownedFurniture?`
+    <div class="sheet-section">
+      <div class="sheet-section-title">弊社管理家具（回収確認）</div>
+      <div class="sheet-furniture-box">${r.ownedFurniture}</div>
+    </div>`:''}
+
+    <div class="sheet-section">
+      <div class="sheet-section-title">退去時 連絡・手続きチェックリスト</div>
+      <table class="sheet-checklist">
+        <thead><tr>
+          <th style="width:76px">連絡先</th>
+          <th style="width:120px">会社名 / 電話番号</th>
+          <th style="width:76px">連絡日</th>
+          <th style="width:76px">完了日</th>
+          <th style="width:38px">完了</th>
+          <th>メモ</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title">備考・特記事項</div>
+      <div class="sheet-notes-box">
+        ${r.notes?`<div style="font-size:10.5px;color:#4a6080;margin-bottom:5px;padding-bottom:4px;border-bottom:1px dashed #c5d5ea">${r.notes}</div>`:''}
+        <div>${wl(3)}</div>
+      </div>
+    </div>
+
+    ${(()=>{
+      const roomAcList=aircons.filter(a=>a.roomName===r.name);
+      if(!roomAcList.length) return '';
+      return `<div class="sheet-section">
+        <div class="sheet-section-title">自社備品エアコン（退去時取り外し確認）</div>
+        <div style="font-size:9px;color:#dc2626;font-weight:700;margin-bottom:5px">※ 追加の場合は備品名に必ず型番を入力すること（例：エアコン 型番）</div>
+        <table class="sheet-checklist">
+          <thead><tr>
+            <th style="width:130px">型番</th>
+            <th style="width:76px">使用終了日</th>
+            <th style="width:100px">取り外し業者名</th>
+            <th style="width:90px">取り外し業者TEL</th>
+            <th>取り外し業者メモ</th>
+            <th style="width:38px">完了</th>
+          </tr></thead>
+          <tbody>
+            ${roomAcList.map(a=>`<tr>
+              <td class="td-label" style="font-size:10px">${a.model}</td>
+              <td class="td-write">${a.endDate?`<div style="font-size:10px">${fmtDate(a.endDate)}</div>`:'<div class="write-line"></div>'}</td>
+              <td class="td-write">${a.removeCo||'<div class="write-line"></div>'}</td>
+              <td class="td-write">${a.removeTel||'<div class="write-line"></div>'}</td>
+              <td class="td-write">${a.removeMemo||''}</td>
+              <td class="td-check"><div class="checkbox-sq"></div></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    })()}
+
+    <div class="sheet-stamp-row">
+      <div class="sheet-stamp"><div class="stamp-label">担当者</div><div class="stamp-line"></div></div>
+      <div class="sheet-stamp"><div class="stamp-label">確認者</div><div class="stamp-line"></div></div>
+      <div class="sheet-stamp"><div class="stamp-label">承認者</div><div class="stamp-line"></div></div>
+      <div class="sheet-stamp" style="flex:2"><div class="stamp-label">退去完了日</div><div class="stamp-line"></div></div>
+    </div>`;
+}
+
+// ======== ALERTS ========
+function renderAlerts(){
+  const days=parseInt(document.getElementById('alert-days-filter').value);
+  const tf=document.getElementById('alert-type-filter').value;
+  let al=getAlerts(days);if(tf)al=al.filter(a=>a.type===tf);
+  const c=document.getElementById('alert-list-container');
+  if(!al.length){c.innerHTML='<div class="empty-state"><div class="icon">✅</div><p>対象期間内の更新はありません</p></div>';return;}
+  c.innerHTML=al.map(a=>{
+    const cl=a.days<=30?'critical':'',col=a.days<=30?'var(--danger)':'var(--warn)';
+    return`<div class="alert-item ${cl}"><div style="font-size:22px">${a.type==='lease'?'🪑':'🛡️'}</div>
+      <div class="alert-item-content">
+        <div class="alert-item-title">${a.roomName}${a.site?' <span style="font-size:11px;color:var(--text2)">（'+a.site+'）</span>':''} — ${a.type==='lease'?'家具リース':'火災保険'}</div>
+        <div class="alert-item-sub">契約先: ${a.company} ／ 更新日: ${fmtDate(a.date)}</div>
+      </div>
+      <div class="alert-days" style="color:${col}">${a.days<0?'期限切れ':a.days+'日後'}</div></div>`;
+  }).join('');
+}
+
+// ======== AIRCON ========
+function renderAircon(){
+  const q=(document.getElementById('ac-search').value||'').toLowerCase();
+  const sf=document.getElementById('ac-site-filter'),curS=sf.value;
+  const acSites=[...new Set(aircons.map(a=>a.site).filter(Boolean))];
+  sf.innerHTML='<option value="">全現場</option>'+acSites.map(s=>`<option value="${s}" ${s===curS?'selected':''}>${s}</option>`).join('');
+  const statusF=document.getElementById('ac-status-filter').value;
+  const fl=aircons.filter(a=>{
+    const match=!q||(a.model||'').toLowerCase().includes(q)||(a.roomName||'').toLowerCase().includes(q)||(a.installCo||'').toLowerCase().includes(q)||(a.removeCo||'').toLowerCase().includes(q);
+    return match&&(!curS||a.site===curS)&&(!statusF||a.status===statusF);
+  });
+  const total=fl.length;
+  const inUse=fl.filter(a=>a.status==='使用中').length;
+  const unused=fl.filter(a=>a.status==='未使用').length;
+  const removed=fl.filter(a=>a.status==='取り外し済').length;
+  const totalCost=fl.reduce((s,a)=>s+(a.buyCost||0),0);
+  document.getElementById('ac-stats').innerHTML=`
+    <div class="stat-card" style="flex:1;min-width:100px"><div class="stat-val">${total}</div><div class="stat-label">総台数</div></div>
+    <div class="stat-card" style="flex:1;min-width:100px"><div class="stat-val" style="color:var(--accent2)">${inUse}</div><div class="stat-label">使用中</div></div>
+    <div class="stat-card" style="flex:1;min-width:100px"><div class="stat-val" style="color:var(--success)">${unused}</div><div class="stat-label">未使用</div></div>
+    <div class="stat-card" style="flex:1;min-width:100px"><div class="stat-val" style="color:var(--text3)">${removed}</div><div class="stat-label">取り外し済</div></div>
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val" style="font-size:18px">¥${totalCost.toLocaleString()}</div><div class="stat-label">購入金額合計</div></div>`;
+  const tbody=document.getElementById('ac-tbody');
+  if(!fl.length){tbody.innerHTML=`<tr><td colspan="11"><div class="empty-state"><div class="icon">❄️</div><p>エアコンの登録がありません</p></div></td></tr>`;return;}
+  const stBadge=s=>s==='使用中'?'<span class="badge badge-blue">使用中</span>':s==='未使用'?'<span class="badge badge-ok">未使用</span>':'<span class="badge badge-empty">取り外し済</span>';
+  tbody.innerHTML=fl.map(a=>`<tr>
+    <td><strong>${a.model||'—'}</strong></td>
+    <td>${stBadge(a.status)}</td>
+    <td>${a.roomName?`<div style="font-weight:600">${a.roomName}</div>${a.site?`<div style="font-size:11px;color:var(--text2)">${a.site}</div>`:''}`:  '—'}</td>
+    <td style="font-size:12px">${fmtDate(a.buyDate)}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px;text-align:right">${a.buyCost!=null&&a.buyCost!==''?'¥'+Number(a.buyCost).toLocaleString():'—'}</td>
+    <td style="font-size:12px">${fmtDate(a.startDate)}</td>
+    <td>${a.installCo||'—'}${a.installTel?`<br><span style="font-size:11px;color:var(--text2)">${a.installTel}</span>`:''}</td>
+    <td style="font-size:12px">${a.endDate?fmtDate(a.endDate):'—'}</td>
+    <td>${a.removeCo||'—'}${a.removeTel?`<br><span style="font-size:11px;color:var(--text2)">${a.removeTel}</span>`:''}</td>
+    <td class="wrap" style="font-size:12px;color:var(--text2)">${[a.installMemo,a.removeMemo].filter(Boolean).join(' / ')||'—'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" onclick="editAc(${a.id})">編集</button>
+      <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="deleteAc(${a.id})">削除</button>
+    </td>
+  </tr>`).join('');
+}
+
+function openAcModal(){
+  editAcId=null;
+  document.getElementById('ac-modal-title').textContent='❄️ エアコンを追加';
+  ['ac-model','ac-install-co','ac-install-tel','ac-install-memo','ac-remove-co','ac-remove-tel','ac-remove-memo','ac-site'].forEach(id=>document.getElementById(id).value='');
+  ['ac-buy-date','ac-start-date','ac-end-date'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ac-buy-cost').value='';
+  document.getElementById('ac-status').value='未使用';
+  const rsel=document.getElementById('ac-room');
+  rsel.innerHTML='<option value="">（宿舎を選択）</option>'+rooms.map(r=>`<option value="${r.name}">${r.name}${r.site?' ('+r.site+')':''}</option>`).join('');
+  document.getElementById('ac-site-datalist').innerHTML=allSites().map(s=>`<option value="${s}">`).join('');
+  document.getElementById('ac-modal').classList.add('open');
+}
+function editAc(id){
+  const a=aircons.find(x=>x.id===id);if(!a)return;
+  editAcId=id;
+  document.getElementById('ac-modal-title').textContent='❄️ エアコンを編集';
+  document.getElementById('ac-model').value=a.model||'';
+  document.getElementById('ac-buy-date').value=a.buyDate||'';
+  document.getElementById('ac-buy-cost').value=a.buyCost!=null?a.buyCost:'';
+  document.getElementById('ac-status').value=a.status||'未使用';
+  document.getElementById('ac-site').value=a.site||'';
+  document.getElementById('ac-start-date').value=a.startDate||'';
+  document.getElementById('ac-end-date').value=a.endDate||'';
+  document.getElementById('ac-install-co').value=a.installCo||'';
+  document.getElementById('ac-install-tel').value=a.installTel||'';
+  document.getElementById('ac-install-memo').value=a.installMemo||'';
+  document.getElementById('ac-remove-co').value=a.removeCo||'';
+  document.getElementById('ac-remove-tel').value=a.removeTel||'';
+  document.getElementById('ac-remove-memo').value=a.removeMemo||'';
+  const rsel=document.getElementById('ac-room');
+  rsel.innerHTML='<option value="">（宿舎を選択）</option>'+rooms.map(r=>`<option value="${r.name}" ${r.name===a.roomName?'selected':''}>${r.name}${r.site?' ('+r.site+')':''}</option>`).join('');
+  document.getElementById('ac-site-datalist').innerHTML=allSites().map(s=>`<option value="${s}">`).join('');
+  document.getElementById('ac-modal').classList.add('open');
+}
+function closeAcModal(){document.getElementById('ac-modal').classList.remove('open');}
+async function saveAc(){
+  const model=document.getElementById('ac-model').value.trim();
+  if(!model){alert('型番は必須です（例：エアコン 型番）');return;}
+  const o={
+    model,status:document.getElementById('ac-status').value,
+    site:document.getElementById('ac-site').value,
+    roomName:document.getElementById('ac-room').value,
+    buyDate:document.getElementById('ac-buy-date').value,
+    buyCost:document.getElementById('ac-buy-cost').value!==''?Number(document.getElementById('ac-buy-cost').value):null,
+    startDate:document.getElementById('ac-start-date').value,
+    endDate:document.getElementById('ac-end-date').value,
+    installCo:document.getElementById('ac-install-co').value,
+    installTel:document.getElementById('ac-install-tel').value,
+    installMemo:document.getElementById('ac-install-memo').value,
+    removeCo:document.getElementById('ac-remove-co').value,
+    removeTel:document.getElementById('ac-remove-tel').value,
+    removeMemo:document.getElementById('ac-remove-memo').value,
+  };
+  if(editAcId) o.id=editAcId;
+  await dbSaveAircon(o);
+  closeAcModal();renderAircon();
+}
+async function deleteAc(id){
+  if(!confirm('このエアコン情報を削除しますか？'))return;
+  await dbDeleteAircon(id);renderAircon();
+}
+
+// ======== PARKING (外部駐車場) ========
+// parkings loaded from Supabase in loadAllData()
+let editPkId = null;
+
+function renderParking(){
+  // rebuild site filter
+  const pkSites=[...new Set(parkings.map(p=>p.site).filter(Boolean))];
+  const sf=document.getElementById('pk-site-filter'),curS=sf.value;
+  sf.innerHTML='<option value="">全現場</option>'+pkSites.map(s=>`<option value="${s}" ${s===curS?'selected':''}>${s}</option>`).join('');
+
+  const q=(document.getElementById('pk-search').value||'').toLowerCase();
+  const siteF=document.getElementById('pk-site-filter').value;
+  const fl=parkings.filter(p=>{
+    const match=!q||(p.site||'').toLowerCase().includes(q)||(p.roomName||'').toLowerCase().includes(q)||(p.pkName||'').toLowerCase().includes(q)||(p.person||'').toLowerCase().includes(q)||(p.carNumber||'').toLowerCase().includes(q);
+    return match&&(!siteF||p.site===siteF);
+  });
+
+  // stats
+  const totalMonthly=fl.reduce((s,p)=>s+(p.monthly||0),0);
+  document.getElementById('pk-stats').innerHTML=`
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val">${fl.length}</div><div class="stat-label">契約件数</div></div>
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val" style="color:var(--warn)">¥${totalMonthly.toLocaleString()}</div><div class="stat-label">月額合計（円）</div></div>`;
+
+  const tbody=document.getElementById('pk-tbody');
+  if(!fl.length){tbody.innerHTML=`<tr><td colspan="11"><div class="empty-state"><div class="icon">🚗</div><p>駐車場の登録がありません</p></div></td></tr>`;return;}
+  tbody.innerHTML=fl.map(p=>`<tr>
+    <td><span class="badge badge-purple">${p.site||'—'}</span></td>
+    <td>${p.roomName||'—'}</td>
+    <td><strong>${p.pkName||'—'}</strong></td>
+    <td>${p.person||'—'}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${p.carNumber||'—'}</td>
+    <td>${p.mgmt||'—'}${p.mgmtTel?`<br><span style="font-size:11px;color:var(--text2)">${p.mgmtTel}</span>`:''}</td>
+    <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px">${p.initCost!=null&&p.initCost!==''?'¥'+Number(p.initCost).toLocaleString():'—'}</td>
+    <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent)">${p.monthly!=null&&p.monthly!==''?'¥'+Number(p.monthly).toLocaleString():'—'}</td>
+    <td class="wrap" style="font-size:12px;color:var(--text2)">${p.penalty||'—'}</td>
+    <td class="wrap" style="font-size:12px;color:var(--text2)">${p.caution||'—'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" onclick="editPk(${p.id})">編集</button>
+      <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="deletePk(${p.id})">削除</button>
+    </td>
+  </tr>`).join('');
+}
+
+function openPkModal(){
+  editPkId=null;
+  document.getElementById('pk-modal-title').textContent='駐車場を追加';
+  ['pk-site','pk-name','pk-person','pk-number','pk-mgmt','pk-mgmt-tel','pk-penalty','pk-caution'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pk-init').value='';
+  document.getElementById('pk-monthly').value='';
+  // populate room select
+  const rsel=document.getElementById('pk-room');
+  rsel.innerHTML='<option value="">（宿舎を選択）</option>'+rooms.map(r=>`<option value="${r.name}">${r.name}${r.site?' ('+r.site+')':''}</option>`).join('');
+  // populate datalist
+  document.getElementById('pk-site-datalist').innerHTML=allSites().map(s=>`<option value="${s}">`).join('');
+  document.getElementById('pk-modal').classList.add('open');
+}
+function editPk(id){
+  const p=parkings.find(x=>x.id===id);if(!p)return;
+  editPkId=id;
+  document.getElementById('pk-modal-title').textContent='駐車場を編集';
+  const rsel=document.getElementById('pk-room');
+  rsel.innerHTML='<option value="">（宿舎を選択）</option>'+rooms.map(r=>`<option value="${r.name}" ${r.name===p.roomName?'selected':''}>${r.name}${r.site?' ('+r.site+')':''}</option>`).join('');
+  document.getElementById('pk-site-datalist').innerHTML=allSites().map(s=>`<option value="${s}">`).join('');
+  document.getElementById('pk-site').value=p.site||'';
+  document.getElementById('pk-name').value=p.pkName||'';
+  document.getElementById('pk-person').value=p.person||'';
+  document.getElementById('pk-number').value=p.carNumber||'';
+  document.getElementById('pk-mgmt').value=p.mgmt||'';
+  document.getElementById('pk-mgmt-tel').value=p.mgmtTel||'';
+  document.getElementById('pk-init').value=p.initCost!=null?p.initCost:'';
+  document.getElementById('pk-monthly').value=p.monthly!=null?p.monthly:'';
+  document.getElementById('pk-penalty').value=p.penalty||'';
+  document.getElementById('pk-caution').value=p.caution||'';
+  document.getElementById('pk-modal').classList.add('open');
+}
+function closePkModal(){document.getElementById('pk-modal').classList.remove('open');}
+async function savePk(){
+  const o={
+    site:document.getElementById('pk-site').value,
+    roomName:document.getElementById('pk-room').value,
+    pkName:document.getElementById('pk-name').value,
+    person:document.getElementById('pk-person').value,
+    carNumber:document.getElementById('pk-number').value,
+    mgmt:document.getElementById('pk-mgmt').value,
+    mgmtTel:document.getElementById('pk-mgmt-tel').value,
+    initCost:document.getElementById('pk-init').value!==''?Number(document.getElementById('pk-init').value):null,
+    monthly:document.getElementById('pk-monthly').value!==''?Number(document.getElementById('pk-monthly').value):null,
+    penalty:document.getElementById('pk-penalty').value,
+    caution:document.getElementById('pk-caution').value,
+  };
+  if(editPkId) o.id=editPkId;
+  await dbSaveParking(o);
+  closePkModal();renderParking();
+}
+async function deletePk(id){if(!confirm('この駐車場情報を削除しますか？'))return;await dbDeleteParking(id);renderParking();}
+
+// ======== EQUIPMENT SUB TABS ========
+function showEqSub(pane, btn){
+  document.querySelectorAll('.eq-sub-btn').forEach(b=>{
+    b.style.borderBottomColor='transparent';b.style.color='var(--text2)';b.style.fontWeight='500';
+  });
+  btn.style.borderBottomColor='var(--accent)';btn.style.color='var(--accent)';btn.style.fontWeight='600';
+  document.getElementById('eq-pane-warehouse').style.display=pane==='warehouse'?'':'none';
+  document.getElementById('eq-pane-lending').style.display=pane==='lending'?'':'none';
+  if(pane==='lending')renderLending();
+}
+
+// ======== EQUIPMENT ========
+function getCatColor(cat){
+  const m={'事務・現場備品':'orange','保護具':'blue','消耗品':'green','工具':'purple','電気材料':'red'};
+  return m[cat]||'gray';
+}
+
+function renderEquipment(){
+  const q=document.getElementById('eq-search').value.toLowerCase();
+  const lf=document.getElementById('eq-location-filter').value;
+  const locs=[...new Set(equipment.map(e=>e.location).filter(Boolean))];
+  const sel=document.getElementById('eq-location-filter'),cur=sel.value;
+  sel.innerHTML='<option value="">全倉庫</option>'+locs.map(l=>`<option value="${l}" ${l===cur?'selected':''}>${l}</option>`).join('');
+  const fl=equipment.filter(e=>(!q||e.name.toLowerCase().includes(q)||(e.location||'').toLowerCase().includes(q)||(e.category||'').toLowerCase().includes(q))&&(!lf||e.location===lf));
+
+  // stats
+  const totalStock=fl.reduce((s,e)=>s+e.stock,0);
+  const totalLent=lendings.filter(l=>l.status==='貸出中').reduce((s,l)=>s+l.qty,0);
+  const zeroStock=fl.filter(e=>e.stock===0).length;
+  document.getElementById('eq-stats').innerHTML=`
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val">${fl.length}</div><div class="stat-label">備品種類</div></div>
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val">${totalStock}</div><div class="stat-label">倉庫在庫（合計）</div></div>
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val" style="color:var(--warn)">${totalLent}</div><div class="stat-label">貸出中（合計）</div></div>
+    <div class="stat-card" style="flex:1;min-width:120px"><div class="stat-val" style="color:${zeroStock>0?'var(--danger)':'var(--success)'}">${zeroStock}</div><div class="stat-label">在庫ゼロ品目</div></div>`;
+
+  const g=document.getElementById('eq-grid');
+  if(!fl.length){g.innerHTML='<div class="empty-state"><div class="icon">📦</div><p>備品が見つかりません</p></div>';return;}
+  g.innerHTML=fl.map(e=>{
+    const lentQty=lendings.filter(l=>l.itemId===e.id&&l.status==='貸出中').reduce((s,l)=>s+l.qty,0);
+    const sc=e.stock===0?'danger':e.stock<=2?'warn':'ok';
+    const catColor=getCatColor(e.category);
+    const stockBadge=e.stock===0
+      ?`<span class="eq-stock-badge zero">在庫なし</span>`
+      :e.stock<=2
+        ?`<span class="eq-stock-badge low">残り少ない</span>`
+        :'';
+    return`<div class="eq-card">
+      <div class="eq-card-header">
+        <div class="eq-card-name">${e.name}</div>
+        ${e.category?`<span class="cat-badge ${catColor}">🏷️ ${e.category}</span>`:''}
+      </div>
+      <div class="eq-card-meta">
+        📍 ${e.location||'—'}
+        ${stockBadge}
+        ${lentQty>0?`<span class="eq-stock-badge low">貸出中 ${lentQty}個</span>`:''}
+      </div>
+      <div class="eq-stock-area">
+        <div class="eq-stock ${sc}">${e.stock}</div>
+        <div class="eq-stock-unit">在庫数</div>
+        ${e.notes?`<div class="eq-notes-inline">${e.notes}</div>`:''}
+      </div>
+      <div class="eq-card-btns">
+        <button class="btn-eq-qty" onclick="openEqQtyModal(${e.id})">📝 数量変更</button>
+        <button class="btn-eq-rec" onclick="openEqHistModal(${e.id})">📊 記録情報</button>
+      </div>
+      <div class="eq-card-sub">
+        <button class="btn btn-ghost btn-sm" onclick="editEq(${e.id})" style="font-size:11px;padding:4px 10px">✏️ 編集</button>
+        <button class="btn btn-ghost btn-sm" onclick="openLendHistoryModal(${e.id})" style="font-size:11px;padding:4px 10px;color:var(--accent)" title="貸出履歴">📋 貸出履歴</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEq(${e.id})" style="font-size:11px;padding:4px 8px">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function adjStock(id,d){const e=equipment.find(x=>x.id===id);if(!e)return;e.stock=Math.max(0,e.stock+d);await dbUpdateEquipmentStock(id,e.stock);renderEquipment();}
+async function adjCustom(id){const e=equipment.find(x=>x.id===id);if(!e)return;const v=prompt(`「${e.name}」の倉庫在庫数`,e.stock);if(v===null)return;const n=parseInt(v);if(isNaN(n)||n<0){alert('正の整数を入力');return;}e.stock=n;await dbUpdateEquipmentStock(id,n);renderEquipment();}
+
+// ======== EQ LOGS (数量変更履歴) ========
+// eqLogs loaded from Supabase in loadAllData()
+let currentEqQtyId = null;
+let currentEqType = 'use';
+
+function selectEqType(t){
+  currentEqType=t;
+  document.getElementById('eq-type-use').className='eq-type-opt use'+(t==='use'?' sel':'');
+  document.getElementById('eq-type-add').className='eq-type-opt add'+(t==='add'?' sel':'');
+  document.getElementById('eq-dot-use').className='eq-type-dot'+(t==='use'?' filled':'');
+  document.getElementById('eq-dot-add').className='eq-type-dot'+(t==='add'?' filled':'');
+}
+
+function openEqQtyModal(id){
+  currentEqQtyId=id;
+  currentEqType='use';
+  selectEqType('use');
+  const eq=equipment.find(e=>e.id===id);
+  document.getElementById('eq-qty-modal-name').textContent=eq?eq.name:'—';
+  document.getElementById('eq-qty-person').value='';
+  document.getElementById('eq-qty-amount').value='1';
+  document.getElementById('eq-qty-memo').value='';
+  const now=new Date();
+  document.getElementById('eq-qty-date').value=now.toISOString().split('T')[0];
+  document.getElementById('eq-qty-time').value=now.toTimeString().slice(0,5);
+  document.getElementById('eq-qty-modal').classList.add('open');
+}
+function closeEqQtyModal(){document.getElementById('eq-qty-modal').classList.remove('open');}
+
+async function saveEqQtyChange(){
+  const person=document.getElementById('eq-qty-person').value.trim();
+  if(!person){alert('使用者名を入力してください');return;}
+  const qty=parseInt(document.getElementById('eq-qty-amount').value)||1;
+  const eq=equipment.find(e=>e.id===currentEqQtyId);
+  if(!eq)return;
+  if(currentEqType==='use'&&eq.stock<qty){
+    if(!confirm(`在庫が${eq.stock}個しかありません。続けますか？`))return;
+  }
+  const delta=currentEqType==='use'?-qty:qty;
+  eq.stock=Math.max(0,eq.stock+delta);
+  const log={
+    itemId:currentEqQtyId,
+    type:currentEqType,
+    qty,
+    person,
+    date:document.getElementById('eq-qty-date').value,
+    time:document.getElementById('eq-qty-time').value,
+    memo:document.getElementById('eq-qty-memo').value,
+    stockAfter:eq.stock
+  };
+  await dbUpdateEquipmentStock(eq.id,eq.stock);
+  await dbInsertEqLog(log);
+  closeEqQtyModal();
+  renderEquipment();
+}
+
+function openEqHistModal(id){
+  const eq=equipment.find(e=>e.id===id);
+  document.getElementById('eq-hist-modal-name').textContent=eq?eq.name:'—';
+  const logs=eqLogs.filter(l=>l.itemId===id).slice().sort((a,b)=>b.id-a.id);
+  const usedTotal=logs.filter(l=>l.type==='use').reduce((s,l)=>s+l.qty,0);
+  const addedTotal=logs.filter(l=>l.type==='add').reduce((s,l)=>s+l.qty,0);
+  document.getElementById('eq-hist-summary').textContent=`累計使用: ${usedTotal}個 ／ 累計追加: ${addedTotal}個 ／ 現在在庫: ${eq?eq.stock:0}個`;
+  const body=document.getElementById('eq-hist-body');
+  if(!logs.length){
+    body.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--text3)"><div style="font-size:40px;margin-bottom:10px">📋</div><p>記録がありません</p></div>`;
+  }else{
+    body.innerHTML=logs.map(l=>{
+      const isUse=l.type==='use';
+      return`<div class="hist-card ${l.type}">
+        <div class="hist-card-top">
+          <div class="hist-type-label ${l.type}">${isUse?'—':'＋'} ${isUse?'使用':'追加'} ${l.qty}個</div>
+          <div class="hist-date-txt">${(l.date||'').replace(/-/g,'/')}<br>${l.time||''}</div>
+        </div>
+        <div class="hist-person-row">👤 ${l.person||'—'}</div>
+        <div class="hist-remain-txt">残数：${l.stockAfter}個</div>
+        ${l.memo?`<div class="hist-notes-box">📝 ${l.memo}</div>`:''}
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('eq-hist-modal').classList.add('open');
+}
+function closeEqHistModal(){document.getElementById('eq-hist-modal').classList.remove('open');}
+function openEqModal(){editEqId=null;document.getElementById('eq-modal-title').textContent='備品を追加';['e-name','e-category','e-location','e-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('e-stock').value=1;document.getElementById('eq-modal').classList.add('open');}
+function editEq(id){const e=equipment.find(x=>x.id===id);if(!e)return;editEqId=id;document.getElementById('eq-modal-title').textContent='備品を編集';document.getElementById('e-name').value=e.name;document.getElementById('e-category').value=e.category||'';document.getElementById('e-location').value=e.location||'';document.getElementById('e-stock').value=e.stock;document.getElementById('e-notes').value=e.notes||'';document.getElementById('eq-modal').classList.add('open');}
+function closeEqModal(){document.getElementById('eq-modal').classList.remove('open');}
+async function saveEquipment(){const name=document.getElementById('e-name').value.trim();if(!name){alert('備品名は必須です');return;}const o={name,category:document.getElementById('e-category').value,location:document.getElementById('e-location').value,stock:parseInt(document.getElementById('e-stock').value)||0,notes:document.getElementById('e-notes').value};if(editEqId){o.id=editEqId;}await dbSaveEquipment(o);closeEqModal();renderEquipment();renderDashboard();}
+async function deleteEq(id){if(!confirm('削除しますか？'))return;await dbDeleteEquipment(id);renderEquipment();renderDashboard();}
+
+// ======== LENDING ========
+// lendings loaded from Supabase in loadAllData()
+let editLendId = null;
+// ======== AIRCON DATA ========
+// aircons loaded from Supabase in loadAllData()
+let editAcId = null;
+
+function saveLendings(){/* replaced by dbInsertLending/dbUpdateLending */}
+function saveAircons(){/* replaced by dbSaveAircon/dbUpdateAircon */}
+
+function renderLending(){
+  const q=document.getElementById('lend-search').value.toLowerCase();
+  const fl=lendings.filter(l=>{
+    const eq=equipment.find(e=>e.id===l.itemId);
+    return !q
+      ||(eq&&eq.name.toLowerCase().includes(q))
+      ||(l.roomName||'').toLowerCase().includes(q)
+      ||(l.roomAddress||'').toLowerCase().includes(q)
+      ||(l.person||'').toLowerCase().includes(q);
+  });
+  const tbody=document.getElementById('lend-tbody');
+  if(!fl.length){tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="icon">📤</div><p>貸出記録がありません</p></div></td></tr>`;return;}
+  tbody.innerHTML=fl.map(l=>{
+    const eq=equipment.find(e=>e.id===l.itemId);
+    const overdue=l.returnDate&&daysUntil(l.returnDate)<0&&l.status==='貸出中';
+    const statusBg=l.status==='返却済'?'badge-ok':overdue?'badge-danger':'badge-warn';
+    const srcBadge=l.fromRoom
+      ?`<span class="badge badge-blue" style="font-size:10px;display:block;margin-top:2px">宿舎連動</span>`
+      :`<span class="badge badge-empty" style="font-size:10px;display:block;margin-top:2px">手動登録</span>`;
+    // destination: room name + address + person
+    const destLines=[
+      l.roomName?`<div style="font-weight:600">${l.roomName}</div>`:'',
+      l.roomAddress?`<div style="font-size:11px;color:var(--text2)">${l.roomAddress}</div>`:'',
+      l.person?`<div style="font-size:11px;color:var(--text2)">👤 ${l.person}</div>`:'',
+    ].filter(Boolean).join('');
+    return`<tr style="${overdue?'background:#fff5f5':''}">
+      <td><strong>${eq?eq.name:'（削除済）'}</strong>${srcBadge}</td>
+      <td>${eq?eq.category||'—':'—'}</td>
+      <td>${destLines||'—'}</td>
+      <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700">${l.qty}</td>
+      <td style="font-size:12px">${fmtDate(l.outDate)}</td>
+      <td style="font-size:12px">${l.returnDate?fmtDate(l.returnDate):'—'}${overdue?'<br><span class="badge badge-danger" style="font-size:10px">返却遅延</span>':''}</td>
+      <td><span class="badge ${statusBg}">${l.status}</span></td>
+      <td style="font-size:12px;color:var(--text2);max-width:120px;white-space:normal">${l.notes||'—'}</td>
+      <td style="white-space:nowrap">
+        ${l.status==='貸出中'&&!l.fromRoom?`<button class="btn btn-sm" style="background:var(--success);color:#fff" onclick="returnLending(${l.id})">返却</button>`:''}
+        ${l.fromRoom&&l.status==='貸出中'?`<span style="font-size:10px;color:var(--text3)">宿舎編集から管理</span>`:''}
+        <button class="btn btn-danger btn-sm" onclick="deleteLendingRow(${l.id})" style="margin-left:4px">削除</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openLendModal(preItemId){
+  editLendId=null;
+  document.getElementById('lend-modal-title').textContent='貸出を記録';
+  // populate item select
+  const sel=document.getElementById('l-item');
+  sel.innerHTML='<option value="">選択してください</option>'+equipment.map(e=>`<option value="${e.id}" ${preItemId===e.id?'selected':''}>${e.name}（在庫:${e.stock}）</option>`).join('');
+  // populate room select
+  const rsel=document.getElementById('l-room');
+  rsel.innerHTML='<option value="">選択してください</option>'+rooms.map(r=>`<option value="${r.name}">${r.name}${r.site?' ('+r.site+')':''}</option>`).join('');
+  ['l-person','l-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('l-qty').value=1;
+  document.getElementById('l-out-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('l-return-date').value='';
+  document.getElementById('lend-modal').classList.add('open');
+}
+function quickLend(itemId){openLendModal(itemId);}
+function closeLendModal(){document.getElementById('lend-modal').classList.remove('open');}
+
+async function saveLending(){
+  const itemId=parseInt(document.getElementById('l-item').value);
+  if(!itemId){alert('備品を選択してください');return;}
+  const qty=parseInt(document.getElementById('l-qty').value)||1;
+  const eq=equipment.find(e=>e.id===itemId);
+  if(eq&&eq.stock<qty){if(!confirm(`在庫が${eq.stock}個しかありません。続けますか？`))return;}
+  const roomName=document.getElementById('l-room').value;
+  const roomObj=rooms.find(r=>r.name===roomName);
+  const o={itemId,qty,roomName,roomAddress:roomObj?roomObj.address||'':'',
+    person:document.getElementById('l-person').value,
+    outDate:document.getElementById('l-out-date').value,
+    returnDate:document.getElementById('l-return-date').value,
+    notes:document.getElementById('l-notes').value,status:'貸出中',fromRoom:false};
+  if(eq){eq.stock=Math.max(0,eq.stock-qty);await dbUpdateEquipmentStock(eq.id,eq.stock);}
+  await dbInsertLending(o);
+  closeLendModal();renderEquipment();renderLending();
+}
+
+async function returnLending(id){
+  if(!confirm('返却済みにしますか？（在庫数が戻ります）'))return;
+  const l=lendings.find(x=>x.id===id);if(!l)return;
+  l.status='返却済';
+  const eq=equipment.find(e=>e.id===l.itemId);
+  if(eq){eq.stock+=l.qty;await dbUpdateEquipmentStock(eq.id,eq.stock);}
+  await dbUpdateLending(id,{status:'返却済'});
+  renderLending();renderEquipment();
+}
+
+async function deleteLendingRow(id){
+  if(!confirm('この貸出記録を削除しますか？\n※ 貸出中の場合は在庫が戻ります'))return;
+  const l=lendings.find(x=>x.id===id);
+  if(l&&l.status==='貸出中'){
+    const eq=equipment.find(e=>e.id===l.itemId);
+    if(eq){eq.stock+=l.qty;await dbUpdateEquipmentStock(eq.id,eq.stock);}
+  }
+  await dbDeleteLending(id);
+  renderLending();renderEquipment();
+}
+
+// ======== LENDING HISTORY MODAL ========
+let lendHistoryItemId = null; // null = all items
+
+function openLendHistoryModal(itemId){
+  lendHistoryItemId = itemId;
+  const eq = itemId ? equipment.find(e=>e.id===itemId) : null;
+  document.getElementById('lend-history-title').textContent = eq
+    ? `📋 貸出履歴 — ${eq.name}`
+    : '📋 貸出履歴（全備品）';
+  document.getElementById('lend-history-sub').textContent = eq
+    ? `カテゴリ: ${eq.category||'—'} ／ 保管場所: ${eq.location||'—'} ／ 現在の在庫: ${eq.stock}`
+    : '全備品の貸出・返却記録';
+  // reset filters
+  document.getElementById('lh-search').value='';
+  document.getElementById('lh-status').value='';
+  document.getElementById('lh-alert').value='';
+  document.getElementById('lend-history-modal').classList.add('open');
+  renderLendHistory();
+}
+
+function closeLendHistoryModal(){
+  document.getElementById('lend-history-modal').classList.remove('open');
+}
+
+function renderLendHistory(){
+  const q = (document.getElementById('lh-search').value||'').toLowerCase();
+  const statusF = document.getElementById('lh-status').value;
+  const alertF = document.getElementById('lh-alert').value;
+  const today = new Date();
+
+  let fl = lendings.filter(l=>{
+    if(lendHistoryItemId && l.itemId !== lendHistoryItemId) return false;
+    if(statusF && l.status !== statusF) return false;
+    if(alertF==='overdue'){
+      if(!(l.returnDate && daysUntil(l.returnDate)<0 && l.status==='貸出中')) return false;
+    }
+    if(alertF==='soon'){
+      const d=daysUntil(l.returnDate);
+      if(!(d!==null && d>=0 && d<=7 && l.status==='貸出中')) return false;
+    }
+    if(q){
+      const eq=equipment.find(e=>e.id===l.itemId);
+      const match=(eq&&eq.name.toLowerCase().includes(q))
+        ||(l.person||'').toLowerCase().includes(q)
+        ||(l.roomName||'').toLowerCase().includes(q)
+        ||(l.roomAddress||'').toLowerCase().includes(q)
+        ||(l.notes||'').toLowerCase().includes(q);
+      if(!match) return false;
+    }
+    return true;
+  });
+
+  // sort: 貸出中 first, then by outDate desc
+  fl.sort((a,b)=>{
+    if(a.status==='貸出中'&&b.status!=='貸出中') return -1;
+    if(a.status!=='貸出中'&&b.status==='貸出中') return 1;
+    return (b.outDate||'').localeCompare(a.outDate||'');
+  });
+
+  // summary counts
+  const allBase = lendHistoryItemId ? lendings.filter(l=>l.itemId===lendHistoryItemId) : lendings;
+  const cntActive = allBase.filter(l=>l.status==='貸出中').length;
+  const cntReturned = allBase.filter(l=>l.status==='返却済').length;
+  const cntOverdue = allBase.filter(l=>l.returnDate&&daysUntil(l.returnDate)<0&&l.status==='貸出中').length;
+  const cntSoon = allBase.filter(l=>{const d=daysUntil(l.returnDate);return d!==null&&d>=0&&d<=7&&l.status==='貸出中';}).length;
+
+  document.getElementById('lh-summary').innerHTML=`
+    <div class="stat-card" style="padding:8px 14px;flex:none">
+      <div style="font-size:18px;font-weight:700;color:var(--warn);font-family:'JetBrains Mono',monospace">${cntActive}</div>
+      <div style="font-size:11px;color:var(--text2)">貸出中</div>
+    </div>
+    <div class="stat-card" style="padding:8px 14px;flex:none">
+      <div style="font-size:18px;font-weight:700;color:var(--success);font-family:'JetBrains Mono',monospace">${cntReturned}</div>
+      <div style="font-size:11px;color:var(--text2)">返却済</div>
+    </div>
+    ${cntOverdue>0?`<div class="stat-card" style="padding:8px 14px;flex:none;border-color:var(--danger)">
+      <div style="font-size:18px;font-weight:700;color:var(--danger);font-family:'JetBrains Mono',monospace">${cntOverdue}</div>
+      <div style="font-size:11px;color:var(--danger)">⚠️ 返却遅延</div>
+    </div>`:''}
+    ${cntSoon>0?`<div class="stat-card" style="padding:8px 14px;flex:none;border-color:var(--warn)">
+      <div style="font-size:18px;font-weight:700;color:var(--warn);font-family:'JetBrains Mono',monospace">${cntSoon}</div>
+      <div style="font-size:11px;color:var(--warn)">🔔 7日以内に期限</div>
+    </div>`:''}`;
+
+  document.getElementById('lh-counts').textContent = `${fl.length}件表示`;
+
+  const tbody = document.getElementById('lh-tbody');
+  if(!fl.length){
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state" style="padding:32px"><div class="icon">📋</div><p>条件に一致する貸出記録がありません</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = fl.map(l=>{
+    const eq=equipment.find(e=>e.id===l.itemId);
+    const dRet = l.returnDate ? daysUntil(l.returnDate) : null;
+    const overdue = dRet!==null && dRet<0 && l.status==='貸出中';
+    const soon = dRet!==null && dRet>=0 && dRet<=7 && l.status==='貸出中';
+    const statusBg = l.status==='返却済'?'badge-ok': overdue?'badge-danger':'badge-warn';
+
+    let retDateHtml = l.returnDate ? fmtDate(l.returnDate) : '—';
+    if(overdue) retDateHtml += `<br><span class="badge badge-danger" style="font-size:10px">${Math.abs(dRet)}日超過</span>`;
+    else if(soon) retDateHtml += `<br><span class="badge badge-warn" style="font-size:10px">${dRet===0?'本日期限':dRet+'日後'}</span>`;
+
+    const srcBadge = l.fromRoom
+      ? `<span class="badge badge-blue" style="font-size:10px">宿舎連動</span>`
+      : `<span class="badge badge-empty" style="font-size:10px">手動登録</span>`;
+
+    const destHtml = [
+      l.roomName?`<div style="font-weight:600;font-size:12px">${l.roomName}</div>`:'',
+      l.roomAddress?`<div style="font-size:11px;color:var(--text2)">${l.roomAddress}</div>`:'',
+    ].filter(Boolean).join('');
+
+    const rowBg = overdue?'#fff5f5': soon?'#fffbeb':'';
+
+    return `<tr style="background:${rowBg}">
+      <td><strong style="font-size:12px">${eq?eq.name:'（削除済）'}</strong></td>
+      <td style="font-size:12px">${l.person?`<div style="font-weight:600">👤 ${l.person}</div>`:'<span style="color:var(--text3)">—</span>'}</td>
+      <td style="font-size:12px">${destHtml||'—'}</td>
+      <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px">${l.qty}</td>
+      <td style="font-size:12px">${fmtDate(l.outDate)}</td>
+      <td style="font-size:12px">${retDateHtml}</td>
+      <td><span class="badge ${statusBg}" style="white-space:nowrap">${l.status}</span></td>
+      <td>${srcBadge}</td>
+      <td style="font-size:12px;color:var(--text2);max-width:100px;white-space:normal">${l.notes||'—'}</td>
+      <td style="white-space:nowrap">
+        ${l.status==='貸出中'&&!l.fromRoom
+          ? `<button class="btn btn-sm" style="background:var(--success);color:#fff;padding:4px 10px" onclick="returnLendingFromHistory(${l.id})">✓ 返却</button>`
+          : ''}
+        ${l.fromRoom&&l.status==='貸出中'
+          ? `<span style="font-size:10px;color:var(--text3)">宿舎から管理</span>`
+          : ''}
+        <button class="btn btn-danger btn-sm" style="margin-left:4px;padding:4px 8px" onclick="deleteLendingFromHistory(${l.id})">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function returnLendingFromHistory(id){
+  if(!confirm('返却済みにしますか？（在庫数が戻ります）'))return;
+  const l=lendings.find(x=>x.id===id);if(!l)return;
+  l.status='返却済';
+  const eq=equipment.find(e=>e.id===l.itemId);
+  if(eq){eq.stock+=l.qty;await dbUpdateEquipmentStock(eq.id,eq.stock);}
+  await dbUpdateLending(id,{status:'返却済'});
+  renderLendHistory();renderEquipment();
+}
+
+async function deleteLendingFromHistory(id){
+  if(!confirm('この貸出記録を削除しますか？\n※ 貸出中の場合は在庫が戻ります'))return;
+  const l=lendings.find(x=>x.id===id);
+  if(l&&l.status==='貸出中'){
+    const eq=equipment.find(e=>e.id===l.itemId);
+    if(eq){eq.stock+=l.qty;await dbUpdateEquipmentStock(eq.id,eq.stock);}
+  }
+  await dbDeleteLending(id);
+  renderLendHistory();renderEquipment();
+}
+
+function deleteLending(id){deleteLendingRow(id);}// alias
+
+// ======== CSS for spin animation ========
+(()=>{const s=document.createElement('style');s.textContent='@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';document.head.appendChild(s);})();
+
+// ======== CSV ========
+function exportCSV(){
+  const h=['現場名','部屋名','郵便番号','住所','ステータス','入居者1','備考1','入居者2','備考2','入居者3','備考3','入居者4','備考4','入居者5','備考5','不動産屋','不動産TEL','管理会社','管理TEL','電気会社','電気TEL','水道会社','水道TEL','リース会社','リースTEL','リース更新日','弊社管理家具','保険会社','保険TEL','保険更新日','証券番号','駐車場','追加駐車場','入居日','解約日','備考'];
+  const row=rooms.map(r=>{
+    const res=(r.residents||[]);
+    const rFlat=[0,1,2,3,4].flatMap(i=>[(res[i]&&res[i].name)||'',(res[i]&&res[i].note)||'']);
+    return[r.site,r.name,r.zip,r.address,r.status,...rFlat,r.realEstate,r.realEstateTel,r.management,r.managementTel,r.electric,r.electricTel,r.water,r.waterTel,r.leaseCo,r.leaseTel,r.leaseDate,r.ownedFurniture,r.insCo,r.insTel,r.insDate,r.insNumber,r.parking,r.extraParking,r.moveIn,r.moveOut,r.notes].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',');
+  });
+  const csv='\uFEFF'+[h.join(','),...row].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=`宿舎管理_${new Date().toISOString().split('T')[0]}.csv`;a.click();
+}
+
+// ======== INIT: Load from Supabase then render ========
+loadAllData().then(()=>{
+  renderDashboard();
+});
+</script>
+</body>
+</html>
