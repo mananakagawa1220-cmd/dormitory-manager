@@ -1,0 +1,66 @@
+name: Supabase Backup
+
+on:
+  schedule:
+    - cron: '0 20 * * *' # 毎日朝5時（日本時間）
+  workflow_dispatch: # 手動実行も可能
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Backup tables
+        run: |
+          mkdir -p backups
+          DATE=$(date +%Y-%m-%d)
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/rooms?select=*&order=id.asc" \
+            -o "backups/rooms_${DATE}.json"
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/equipment?select=*&order=id.asc" \
+            -o "backups/equipment_${DATE}.json"
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/lendings?select=*&order=id.asc" \
+            -o "backups/lendings_${DATE}.json"
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/aircons?select=*&order=id.asc" \
+            -o "backups/aircons_${DATE}.json"
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/parkings?select=*&order=id.asc" \
+            -o "backups/parkings_${DATE}.json"
+          curl -s \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/eq_logs?select=*&order=id.asc" \
+            -o "backups/eq_logs_${DATE}.json"
+
+      - name: Keep only last 30 days
+        run: |
+          cd backups
+          for TABLE in rooms equipment lendings aircons parkings eq_logs; do
+            ls -t ${TABLE}_*.json 2>/dev/null | tail -n +31 | xargs -r rm
+          done
+
+      - name: Commit backup
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add backups/
+          git diff --staged --quiet || git commit -m "🗄️ Auto backup $(date +%Y-%m-%d)"
+          git push
