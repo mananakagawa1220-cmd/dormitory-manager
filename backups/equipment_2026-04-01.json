@@ -1,0 +1,8 @@
+[{"id":2,"name":"洗濯機","category":"家電","location":"山洋","stock":0,"notes":null,"created_at":"2026-03-12T07:30:56.437992+00:00","updated_at":"2026-03-19T06:15:38.761301+00:00"}, 
+ {"id":3,"name":"冷蔵庫","category":"家電","location":"山洋","stock":0,"notes":null,"created_at":"2026-03-12T07:31:28.485283+00:00","updated_at":"2026-03-19T06:15:38.964997+00:00"}, 
+ {"id":4,"name":"ポット","category":"家電","location":"山洋","stock":0,"notes":null,"created_at":"2026-03-12T07:32:06.698794+00:00","updated_at":"2026-03-19T06:15:39.158403+00:00"}, 
+ {"id":5,"name":"電子レンジ","category":"家電","location":"山洋","stock":0,"notes":null,"created_at":"2026-03-12T07:32:29.050992+00:00","updated_at":"2026-03-30T04:21:51.65448+00:00"}, 
+ {"id":6,"name":"ウォシュレット","category":"家電","location":null,"stock":0,"notes":null,"created_at":"2026-03-17T07:24:49.048483+00:00","updated_at":"2026-03-30T04:21:51.948515+00:00"}, 
+ {"id":7,"name":"ファンヒーター","category":"家電","location":null,"stock":0,"notes":null,"created_at":"2026-03-19T05:39:33.106209+00:00","updated_at":"2026-03-19T05:42:27.477569+00:00"}, 
+ {"id":8,"name":"タンク","category":"家電","location":null,"stock":0,"notes":null,"created_at":"2026-03-19T05:39:55.573289+00:00","updated_at":"2026-03-19T05:42:27.742553+00:00"}, 
+ {"id":9,"name":"ストーブ","category":"家電","location":null,"stock":0,"notes":null,"created_at":"2026-03-23T13:17:40.144591+00:00","updated_at":"2026-03-30T04:21:52.156449+00:00"}]
