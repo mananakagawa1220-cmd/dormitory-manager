@@ -1,0 +1,9 @@
+[{"id":2,"item_id":5,"type":"add","qty":1,"person":"事務","log_date":"2026-03-12","log_time":"16:32:00","memo":"個数確認\n","stock_after":2,"created_at":"2026-03-12T07:33:18.13297+00:00"}, 
+ {"id":3,"item_id":5,"type":"add","qty":1,"person":"専務","log_date":"2026-03-17","log_time":"16:24:00","memo":"宮元さん2026.2請求書にて購入（専務承諾）","stock_after":1,"created_at":"2026-03-17T07:25:34.000625+00:00"}, 
+ {"id":4,"item_id":7,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-09","log_time":"15:27:00","memo":"柏崎事務所に3つ保管","stock_after":6,"created_at":"2026-04-09T06:27:50.52376+00:00"}, 
+ {"id":5,"item_id":8,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-09","log_time":"15:27:00","memo":"柏崎事務所に4つ保管","stock_after":3,"created_at":"2026-04-09T06:28:41.932564+00:00"}, 
+ {"id":6,"item_id":8,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-09","log_time":"15:28:00","memo":"柏崎事務所に4つ保管","stock_after":4,"created_at":"2026-04-09T06:29:13.629966+00:00"}, 
+ {"id":7,"item_id":4,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-09","log_time":"15:48:00","memo":"柏崎事務所に1つ保管","stock_after":1,"created_at":"2026-04-09T06:49:01.663762+00:00"}, 
+ {"id":8,"item_id":3,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-09","log_time":"15:49:00","memo":"柏崎事務所に1台保管","stock_after":1,"created_at":"2026-04-09T06:49:57.892807+00:00"}, 
+ {"id":9,"item_id":2,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-09","log_time":"16:07:00","memo":null,"stock_after":1,"created_at":"2026-04-09T07:07:24.478274+00:00"}, 
+ {"id":10,"item_id":5,"type":"add","qty":1,"person":"佐藤職長","log_date":"2026-04-12","log_time":"08:58:00","memo":"柏崎事務所","stock_after":1,"created_at":"2026-04-12T23:59:25.775464+00:00"}]
