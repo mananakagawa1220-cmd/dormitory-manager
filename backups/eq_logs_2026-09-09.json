@@ -15,4 +15,6 @@
  {"id":16,"item_id":3,"type":"add","qty":1,"person":"柏崎","log_date":"2026-06-01","log_time":"09:25:00","memo":null,"stock_after":1,"created_at":"2026-06-01T00:25:51.983444+00:00"}, 
  {"id":17,"item_id":3,"type":"use","qty":1,"person":"七尾市矢田字貸家","log_date":"2026-06-01","log_time":"09:26:00","memo":null,"stock_after":0,"created_at":"2026-06-01T00:26:07.445556+00:00"}, 
  {"id":18,"item_id":5,"type":"use","qty":1,"person":"七尾市矢田貸家","log_date":"2026-06-01","log_time":"09:26:00","memo":null,"stock_after":1,"created_at":"2026-06-01T00:26:24.453066+00:00"}, 
- {"id":19,"item_id":24,"type":"use","qty":1,"person":"土場ハウス","log_date":"2026-06-01","log_time":"09:29:00","memo":null,"stock_after":1,"created_at":"2026-06-01T00:29:54.287364+00:00"}]
+ {"id":19,"item_id":24,"type":"use","qty":1,"person":"土場ハウス","log_date":"2026-06-01","log_time":"09:29:00","memo":null,"stock_after":1,"created_at":"2026-06-01T00:29:54.287364+00:00"}, 
+ {"id":20,"item_id":3,"type":"add","qty":1,"person":"町野川　土場","log_date":"2026-08-18","log_time":"11:08:00","memo":null,"stock_after":1,"created_at":"2026-08-27T02:10:06.466447+00:00"}, 
+ {"id":21,"item_id":3,"type":"use","qty":1,"person":"町野川　土場","log_date":"2026-08-18","log_time":"11:10:00","memo":null,"stock_after":0,"created_at":"2026-08-27T02:10:27.15285+00:00"}]
